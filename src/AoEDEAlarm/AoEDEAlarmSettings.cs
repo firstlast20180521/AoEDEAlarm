@@ -29,7 +29,7 @@ namespace AoEDEAlarm {
 
         public static void SaveXml(AoEDEAlarmSettings s) {
             XmlSerializer serializer = new XmlSerializer(typeof(AoEDEAlarmSettings));
-            using (StreamWriter sw = new StreamWriter(AoedeGlobal.SettingFileName, false, Encoding.UTF8)) {
+            using (StreamWriter sw = new StreamWriter(AoedeStaticGlobal.SettingFileName, false, Encoding.UTF8)) {
                 serializer.Serialize(sw, s);
             }
 
@@ -39,7 +39,7 @@ namespace AoEDEAlarm {
             XmlSerializer serializer = new XmlSerializer(typeof(AoEDEAlarmSettings));
             AoEDEAlarmSettings i;
             try {
-                using (Stream reader = new FileStream(AoedeGlobal.SettingFileName, FileMode.Open)) {
+                using (Stream reader = new FileStream(AoedeStaticGlobal.SettingFileName, FileMode.Open)) {
                     i = (AoEDEAlarmSettings)serializer.Deserialize(reader);
                 }
                 return i;

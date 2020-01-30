@@ -25,9 +25,9 @@ namespace AoEDEAlarm {
         private void HotkeySettingForm_Load(object sender, EventArgs e) {
 
             KeysArr = new Keys[3];
-            KeysArr[0] = (Keys)AoedeGlobal.Settings.Hotkey_Run;
-            KeysArr[1] = (Keys)AoedeGlobal.Settings.Hotkey_Stop;
-            KeysArr[2] = (Keys)AoedeGlobal.Settings.Hotkey_Customise;
+            KeysArr[0] = (Keys)AoedeStaticGlobal.Settings.Hotkey_Run;
+            KeysArr[1] = (Keys)AoedeStaticGlobal.Settings.Hotkey_Stop;
+            KeysArr[2] = (Keys)AoedeStaticGlobal.Settings.Hotkey_Customise;
 
             dataGridView1.ClipboardCopyMode = DataGridViewClipboardCopyMode.Disable;
             //dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
@@ -132,11 +132,11 @@ namespace AoEDEAlarm {
 
         private void button1_Click(object sender, EventArgs e) {
 
-            AoedeGlobal.Settings.Hotkey_Run = (int)KeysArr[0];
-            AoedeGlobal.Settings.Hotkey_Stop = (int)KeysArr[1];
-            AoedeGlobal.Settings.Hotkey_Customise = (int)KeysArr[2];
+            AoedeStaticGlobal.Settings.Hotkey_Run = (int)KeysArr[0];
+            AoedeStaticGlobal.Settings.Hotkey_Stop = (int)KeysArr[1];
+            AoedeStaticGlobal.Settings.Hotkey_Customise = (int)KeysArr[2];
 
-            AoEDEAlarmSettings.SaveXml(AoedeGlobal.Settings);
+            AoEDEAlarmSettings.SaveXml(AoedeStaticGlobal.Settings);
 
             MessageBox.Show(text: "位置を保存しました。"
                 , caption: "画像位置設定"

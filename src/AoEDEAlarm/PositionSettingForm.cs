@@ -33,38 +33,38 @@ namespace AoEDEAlarm {
 
         AoEDEAlarmSettings _ps = new AoEDEAlarmSettings {
             Wood = new AoEDEAlarmSettings.Rectangle {
-                X = AoedeGlobal.Settings.Wood.X,
-                Y = AoedeGlobal.Settings.Wood.Y,
-                Width = AoedeGlobal.Settings.Wood.Width,
-                Height = AoedeGlobal.Settings.Wood.Height,
+                X = AoedeStaticGlobal.Settings.Wood.X,
+                Y = AoedeStaticGlobal.Settings.Wood.Y,
+                Width = AoedeStaticGlobal.Settings.Wood.Width,
+                Height = AoedeStaticGlobal.Settings.Wood.Height,
             },
 
             Food = new AoEDEAlarmSettings.Rectangle {
-                X = AoedeGlobal.Settings.Food.X,
-                Y = AoedeGlobal.Settings.Food.Y,
-                Width = AoedeGlobal.Settings.Food.Width,
-                Height = AoedeGlobal.Settings.Food.Height,
+                X = AoedeStaticGlobal.Settings.Food.X,
+                Y = AoedeStaticGlobal.Settings.Food.Y,
+                Width = AoedeStaticGlobal.Settings.Food.Width,
+                Height = AoedeStaticGlobal.Settings.Food.Height,
             },
 
             Gold = new AoEDEAlarmSettings.Rectangle {
-                X = AoedeGlobal.Settings.Gold.X,
-                Y = AoedeGlobal.Settings.Gold.Y,
-                Width = AoedeGlobal.Settings.Gold.Width,
-                Height = AoedeGlobal.Settings.Gold.Height,
+                X = AoedeStaticGlobal.Settings.Gold.X,
+                Y = AoedeStaticGlobal.Settings.Gold.Y,
+                Width = AoedeStaticGlobal.Settings.Gold.Width,
+                Height = AoedeStaticGlobal.Settings.Gold.Height,
             },
 
             Stone = new AoEDEAlarmSettings.Rectangle {
-                X = AoedeGlobal.Settings.Stone.X,
-                Y = AoedeGlobal.Settings.Stone.Y,
-                Width = AoedeGlobal.Settings.Stone.Width,
-                Height = AoedeGlobal.Settings.Stone.Height,
+                X = AoedeStaticGlobal.Settings.Stone.X,
+                Y = AoedeStaticGlobal.Settings.Stone.Y,
+                Width = AoedeStaticGlobal.Settings.Stone.Width,
+                Height = AoedeStaticGlobal.Settings.Stone.Height,
             },
 
             Population = new AoEDEAlarmSettings.Rectangle {
-                X = AoedeGlobal.Settings.Population.X,
-                Y = AoedeGlobal.Settings.Population.Y,
-                Width = AoedeGlobal.Settings.Population.Width,
-                Height = AoedeGlobal.Settings.Population.Height,
+                X = AoedeStaticGlobal.Settings.Population.X,
+                Y = AoedeStaticGlobal.Settings.Population.Y,
+                Width = AoedeStaticGlobal.Settings.Population.Width,
+                Height = AoedeStaticGlobal.Settings.Population.Height,
             },
 
         };
@@ -238,32 +238,32 @@ namespace AoEDEAlarm {
         }
 
         private void button1_Click(object sender, EventArgs e) {
-            AoedeGlobal.Settings.Wood.X = _ps.Wood.X;
-            AoedeGlobal.Settings.Wood.Y = _ps.Wood.Y;
-            AoedeGlobal.Settings.Wood.Width = _ps.Wood.Width;
-            AoedeGlobal.Settings.Wood.Height = _ps.Wood.Height;
+            AoedeStaticGlobal.Settings.Wood.X = _ps.Wood.X;
+            AoedeStaticGlobal.Settings.Wood.Y = _ps.Wood.Y;
+            AoedeStaticGlobal.Settings.Wood.Width = _ps.Wood.Width;
+            AoedeStaticGlobal.Settings.Wood.Height = _ps.Wood.Height;
 
-            AoedeGlobal.Settings.Food.X = _ps.Food.X;
-            AoedeGlobal.Settings.Food.Y = _ps.Food.Y;
-            AoedeGlobal.Settings.Food.Width = _ps.Food.Width;
-            AoedeGlobal.Settings.Food.Height = _ps.Food.Height;
+            AoedeStaticGlobal.Settings.Food.X = _ps.Food.X;
+            AoedeStaticGlobal.Settings.Food.Y = _ps.Food.Y;
+            AoedeStaticGlobal.Settings.Food.Width = _ps.Food.Width;
+            AoedeStaticGlobal.Settings.Food.Height = _ps.Food.Height;
 
-            AoedeGlobal.Settings.Gold.X = _ps.Gold.X;
-            AoedeGlobal.Settings.Gold.Y = _ps.Gold.Y;
-            AoedeGlobal.Settings.Gold.Width = _ps.Gold.Width;
-            AoedeGlobal.Settings.Gold.Height = _ps.Gold.Height;
+            AoedeStaticGlobal.Settings.Gold.X = _ps.Gold.X;
+            AoedeStaticGlobal.Settings.Gold.Y = _ps.Gold.Y;
+            AoedeStaticGlobal.Settings.Gold.Width = _ps.Gold.Width;
+            AoedeStaticGlobal.Settings.Gold.Height = _ps.Gold.Height;
 
-            AoedeGlobal.Settings.Stone.X = _ps.Stone.X;
-            AoedeGlobal.Settings.Stone.Y = _ps.Stone.Y;
-            AoedeGlobal.Settings.Stone.Width = _ps.Stone.Width;
-            AoedeGlobal.Settings.Stone.Height = _ps.Stone.Height;
+            AoedeStaticGlobal.Settings.Stone.X = _ps.Stone.X;
+            AoedeStaticGlobal.Settings.Stone.Y = _ps.Stone.Y;
+            AoedeStaticGlobal.Settings.Stone.Width = _ps.Stone.Width;
+            AoedeStaticGlobal.Settings.Stone.Height = _ps.Stone.Height;
 
-            AoedeGlobal.Settings.Population.X = _ps.Population.X;
-            AoedeGlobal.Settings.Population.Y = _ps.Population.Y;
-            AoedeGlobal.Settings.Population.Width = _ps.Population.Width;
-            AoedeGlobal.Settings.Population.Height = _ps.Population.Height;
+            AoedeStaticGlobal.Settings.Population.X = _ps.Population.X;
+            AoedeStaticGlobal.Settings.Population.Y = _ps.Population.Y;
+            AoedeStaticGlobal.Settings.Population.Width = _ps.Population.Width;
+            AoedeStaticGlobal.Settings.Population.Height = _ps.Population.Height;
 
-            AoEDEAlarmSettings.SaveXml(AoedeGlobal.Settings);
+            AoEDEAlarmSettings.SaveXml(AoedeStaticGlobal.Settings);
 
             MessageBox.Show(text: "位置を保存しました。"
                 , caption: "画像位置設定"

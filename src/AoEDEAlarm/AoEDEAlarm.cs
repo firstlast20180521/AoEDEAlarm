@@ -23,7 +23,7 @@ namespace AoEDEAlarm {
         System.Media.SoundPlayer _SoundPlayer = new System.Media.SoundPlayer();
 
         public AoEDEAlarm() {
-            _SoundPlayer = new System.Media.SoundPlayer(AoedeGlobal.SoundFileName1);
+            _SoundPlayer = new System.Media.SoundPlayer(AoedeStaticGlobal.SoundFileName1);
         }
 
         public async Task<bool> Run(CancellationToken token) {
@@ -46,15 +46,15 @@ namespace AoEDEAlarm {
                     using (Mat mat = BitmapConverter.ToMat(bmp)) {
                         //Cv2.ImShow("test", mat);
 
-                        Point loc = new Point(AoedeGlobal.Settings.Population.X, AoedeGlobal.Settings.Population.Y);
-                        Size sz = new Size(AoedeGlobal.Settings.Population.Width, AoedeGlobal.Settings.Population.Height);
+                        Point loc = new Point(AoedeStaticGlobal.Settings.Population.X, AoedeStaticGlobal.Settings.Population.Y);
+                        Size sz = new Size(AoedeStaticGlobal.Settings.Population.Width, AoedeStaticGlobal.Settings.Population.Height);
 
                         using (Mat mat2 = mat.Clone(new OpenCvSharp.Rect(loc, sz))) {
 
                             using (Mat mat3 = Reverse(mat2)) {
                                 using (Mat mat4 = new Mat()) {
                                     Cv2.Resize(mat3, mat4, new Size(mat3.Width * 3, mat3.Height * 3));
-                                    using (var tesseract = new TesseractEngine(AoedeGlobal.TessdataPath, "eng", EngineMode.LstmOnly)) {
+                                    using (var tesseract = new TesseractEngine(AoedeStaticGlobal.TessdataPath, "eng", EngineMode.LstmOnly)) {
                                         tesseract.SetVariable("tessedit_char_whitelist", "1234567890/");
                                         var page = tesseract.Process(mat4.ToBitmap());
                                         string text = page.GetText();

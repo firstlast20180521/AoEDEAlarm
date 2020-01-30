@@ -47,14 +47,15 @@ namespace AoEDEAlarm {
                     Application.EnableVisualStyles();
                     Application.SetCompatibleTextRenderingDefault(false);
 
-                    AoedeGlobal.Settings = AoEDEAlarmSettings.LoadXml();
+                    //AoedeGlobal _g = new AoedeGlobal();
+                    AoedeStaticGlobal.Settings = AoEDEAlarmSettings.LoadXml();
                     StartHotkeys();
                     NotifyIcon ni = SetNotifyIcon();
 
                     System.Windows.Forms.Application.Run();
 
                     ni.Dispose();
-                    AoEDEAlarmSettings.SaveXml(AoedeGlobal.Settings);
+                    AoEDEAlarmSettings.SaveXml(AoedeStaticGlobal.Settings);
 
                 } catch (Exception ex) {
                     // アプリケーション例外処理
@@ -84,43 +85,64 @@ namespace AoEDEAlarm {
 
             ContextMenuStrip cms = new ContextMenuStrip();
 
-            ToolStripMenuItem item1 = new ToolStripMenuItem() {
-                Text = "終了",
+            ToolStripMenuItem item_start_monitoring = new ToolStripMenuItem() {
+                Text = "監視開始",
                 Image = null,
-                //Font = new System.Drawing.Font("游明朝", 14),
-                Name = "終了ToolStripMenuItem",
+                Name = "監視開始ToolStripMenuItem",
             };
-            item1.Click += Item1_Click;
+            item_start_monitoring.Click += item_start_monitoring_Click;
 
-            ToolStripMenuItem item2 = new ToolStripMenuItem() {
+            ToolStripMenuItem item_finish_monitoring = new ToolStripMenuItem() {
+                Text = "監視終了",
+                Image = null,
+                Name = "監視終了ToolStripMenuItem",
+            };
+            item_finish_monitoring.Click += Item_finish_monitoring_Click;
+
+            ToolStripMenuItem item_hotkey_setting = new ToolStripMenuItem() {
                 Text = "ホットキー設定",
                 Image = null,
-                //Font = new System.Drawing.Font("游明朝", 14),
                 Name = "ホットキー設定ToolStripMenuItem",
             };
-            item2.Click += Item2_Click;
+            item_hotkey_setting.Click += Item2_Click;
 
-            ToolStripMenuItem item3 = new ToolStripMenuItem() {
+            ToolStripMenuItem item_help = new ToolStripMenuItem() {
                 Text = "ヘルプ",
                 Image = null,
-                //Font = new System.Drawing.Font("游明朝", 14),
                 Name = "ヘルプToolStripMenuItem",
             };
-            item3.Click += Item3_Click;
+            item_help.Click += Item3_Click;
 
-            cms.Items.Add(item1);
-            cms.Items.Add(item2);
-            cms.Items.Add(item3);
+            ToolStripMenuItem item_exit_application = new ToolStripMenuItem() {
+                Text = "終了",
+                Image = null,
+                Name = "終了ToolStripMenuItem",
+            };
+            item_exit_application.Click += Item1_Click;
+
+            cms.Items.Add(item_start_monitoring);
+            cms.Items.Add(item_finish_monitoring);
+            cms.Items.Add(item_hotkey_setting);
+            cms.Items.Add(item_help);
+            cms.Items.Add(item_exit_application);
             ni.ContextMenuStrip = cms;
 
             return ni;
 
         }
 
+        private static void Item_finish_monitoring_Click(object sender, EventArgs e) {
+            Hk_Stop_HotkeyEvent(sender, e);
+        }
+
+        private static void item_start_monitoring_Click(object sender, EventArgs e) {
+            Hk_Run_HotkeyEvent(sender, e);
+        }
+
         private static void StartHotkeys() {
-            _g.Hotkey_Run = new HotKey((Keys)AoedeGlobal.Settings.Hotkey_Run);
-            _g.Hotkey_Stop = new HotKey((Keys)AoedeGlobal.Settings.Hotkey_Stop);
-            _g.Hotkey_Customise = new HotKey((Keys)AoedeGlobal.Settings.Hotkey_Customise);
+            _g.Hotkey_Run = new HotKey((Keys)AoedeStaticGlobal.Settings.Hotkey_Run);
+            _g.Hotkey_Stop = new HotKey((Keys)AoedeStaticGlobal.Settings.Hotkey_Stop);
+            _g.Hotkey_Customise = new HotKey((Keys)AoedeStaticGlobal.Settings.Hotkey_Customise);
 
             _g.Hotkey_Run.HotkeyEvent += Hk_Run_HotkeyEvent;
             _g.Hotkey_Stop.HotkeyEvent += Hk_Stop_HotkeyEvent;
@@ -141,7 +163,7 @@ namespace AoEDEAlarm {
         /// <param name="e"></param>
         private static void Hk_Run_HotkeyEvent(object sender, EventArgs e) {
 
-            if (AoedeGlobal.IsRunning) {
+            if (AoedeStaticGlobal.IsRunning) {
                 MessageBox.Show(text: $"既に監視中です。"
                     , caption: "AoEDEAlarm"
                     , buttons: MessageBoxButtons.OK
@@ -153,7 +175,7 @@ namespace AoEDEAlarm {
 
             }
 
-            if (Check()==false) {
+            if (Check() == false) {
                 MessageBox.Show(text: $"位置設定が行われていません。"
                     , caption: "AoEDEAlarm"
                     , buttons: MessageBoxButtons.OK
@@ -164,7 +186,7 @@ namespace AoEDEAlarm {
                 return;
             }
 
-            AoedeGlobal.IsRunning = true;
+            AoedeStaticGlobal.IsRunning = true;
 
             //string zz = Win32Api.GetActiveWindowProductName();
             //Debug.WriteLine(zz);
@@ -181,8 +203,8 @@ namespace AoEDEAlarm {
 
             //if (Win32Api.GetActiveWindowProductName() != "AoEDE") return;
 
-            AoedeGlobal.tokenSource = new CancellationTokenSource();
-            CancellationToken token = AoedeGlobal.tokenSource.Token;
+            AoedeStaticGlobal.tokenSource = new CancellationTokenSource();
+            CancellationToken token = AoedeStaticGlobal.tokenSource.Token;
 
             using (AoEDEAlarm a = new AoEDEAlarm()) {
 
@@ -197,7 +219,7 @@ namespace AoEDEAlarm {
                         , defaultButton: MessageBoxDefaultButton.Button1
                         , options: MessageBoxOptions.DefaultDesktopOnly
                         );
-                    AoedeGlobal.IsRunning = false;
+                    AoedeStaticGlobal.IsRunning = false;
                 }, token);
 
                 //最前面
@@ -214,8 +236,8 @@ namespace AoEDEAlarm {
         }
 
         private static bool Check() {
-            if (AoedeGlobal.Settings.Population.Height == 0) return false;
-            if (AoedeGlobal.Settings.Population.Width == 0) return false;
+            if (AoedeStaticGlobal.Settings.Population.Height == 0) return false;
+            if (AoedeStaticGlobal.Settings.Population.Width == 0) return false;
             return true;
         }
 
@@ -226,7 +248,7 @@ namespace AoEDEAlarm {
         /// <param name="e"></param>
         private static void Hk_Stop_HotkeyEvent(object sender, EventArgs e) {
             //if (Win32Api.GetActiveWindowProductName() != "AoEDEAlarm") return;
-            AoedeGlobal.tokenSource.Cancel();
+            AoedeStaticGlobal.tokenSource.Cancel();
 
 
         }
@@ -238,7 +260,7 @@ namespace AoEDEAlarm {
         /// <param name="e"></param>
         private static void Hk_Setting_HotkeyEvent(object sender, EventArgs e) {
 
-            if (AoedeGlobal.IsRunning) {
+            if (AoedeStaticGlobal.IsRunning) {
                 MessageBox.Show(text: $"監視処理を終了する必要があります。"
                     , caption: "AoEDEAlarm"
                     , buttons: MessageBoxButtons.OK
@@ -261,7 +283,7 @@ namespace AoEDEAlarm {
         private static void Item1_Click(object sender, EventArgs e) {
 
             try {
-                AoedeGlobal.tokenSource.Cancel();
+                AoedeStaticGlobal.tokenSource.Cancel();
             } catch (Exception) {
             }
 
@@ -279,7 +301,7 @@ namespace AoEDEAlarm {
         }
 
         private static void Item2_Click(object sender, EventArgs e) {
-            if (AoedeGlobal.IsRunning) {
+            if (AoedeStaticGlobal.IsRunning) {
                 MessageBox.Show(text: $"監視処理を終了する必要があります。"
                     , caption: "AoEDEAlarm"
                     , buttons: MessageBoxButtons.OK
@@ -300,7 +322,7 @@ namespace AoEDEAlarm {
         }
 
         private static void Item3_Click(object sender, EventArgs e) {
-            System.Diagnostics.Process.Start("file://" + AoedeGlobal.HelpFileName);
+            System.Diagnostics.Process.Start("file://" + AoedeStaticGlobal.HelpFileName);
         }
 
 

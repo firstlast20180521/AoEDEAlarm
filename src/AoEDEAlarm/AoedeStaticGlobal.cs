@@ -8,11 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace AoEDEAlarm {
-    public class AoedeGlobal {
-        public HotKey Hotkey_Run;
-        public HotKey Hotkey_Stop;
-        public HotKey Hotkey_Customise;
-
+    static class AoedeStaticGlobal {
         public static AoEDEAlarmSettings Settings;
 
         public static CancellationTokenSource tokenSource = null;
@@ -28,8 +24,7 @@ namespace AoEDEAlarm {
         public static string HelpFileName { get; set; }
         public static string DebugBitmapFileName { get; set; }
 
-        public AoedeGlobal() {
-            Hotkey_Run = new HotKey();
+        static AoedeStaticGlobal() {
 
             Assembly assm = Assembly.GetExecutingAssembly();
             IsRunning = false;
@@ -51,7 +46,5 @@ namespace AoEDEAlarm {
             DebugBitmapFileName = Path.Combine(WorkDirectoryPath, @"xxx.bmp");
 
         }
-
-
     }
 }
