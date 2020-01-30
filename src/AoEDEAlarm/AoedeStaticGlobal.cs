@@ -8,7 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace AoEDEAlarm {
-    static class AoedeStaticGlobal {
+    public static class AoedeStaticGlobal {
         public static AoEDEAlarmSettings Settings;
 
         public static CancellationTokenSource tokenSource = null;
