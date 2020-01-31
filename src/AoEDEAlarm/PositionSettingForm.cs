@@ -26,6 +26,7 @@ namespace AoEDEAlarm {
             Gold,
             Stone,
             Population,
+            IdlePopulation,
         }
 
         private RadioButton[] radioButtons = new RadioButton[Enum.GetNames(typeof(ResourceKind)).Length];
@@ -60,11 +61,18 @@ namespace AoEDEAlarm {
                 Height = AoedeStaticGlobal.Settings.Stone.Height,
             },
 
-            Population = new AoEDEAlarmSettings.Rectangle {
-                X = AoedeStaticGlobal.Settings.Population.X,
-                Y = AoedeStaticGlobal.Settings.Population.Y,
-                Width = AoedeStaticGlobal.Settings.Population.Width,
-                Height = AoedeStaticGlobal.Settings.Population.Height,
+            Housing = new AoEDEAlarmSettings.Rectangle {
+                X = AoedeStaticGlobal.Settings.Housing.X,
+                Y = AoedeStaticGlobal.Settings.Housing.Y,
+                Width = AoedeStaticGlobal.Settings.Housing.Width,
+                Height = AoedeStaticGlobal.Settings.Housing.Height,
+            },
+
+            NotWorking = new AoEDEAlarmSettings.Rectangle {
+                X = AoedeStaticGlobal.Settings.NotWorking.X,
+                Y = AoedeStaticGlobal.Settings.NotWorking.Y,
+                Width = AoedeStaticGlobal.Settings.NotWorking.Width,
+                Height = AoedeStaticGlobal.Settings.NotWorking.Height,
             },
 
         };
@@ -79,6 +87,7 @@ namespace AoEDEAlarm {
             radioButtons[2] = this.rdoGold;
             radioButtons[3] = this.rdoStone;
             radioButtons[4] = this.rdoPopulation;
+            radioButtons[5] = this.rdoIdlePopulation;
 
             radioButtons[0].Focus();
 
@@ -92,6 +101,7 @@ namespace AoEDEAlarm {
             pictureBoxes[2] = this.pctGold;
             pictureBoxes[3] = this.pctStone;
             pictureBoxes[4] = this.pctPopulation;
+            pictureBoxes[5] = this.pctIdlePopulation;
 
             //フルスクリーン矩形を作成
             Rectangle rect = Screen.PrimaryScreen.Bounds;
@@ -114,7 +124,8 @@ namespace AoEDEAlarm {
                 DrawPicture(pctCanvas, _ps.Food.X, _ps.Food.Y, _ps.Food.Width, _ps.Food.Height, pctFood);
                 DrawPicture(pctCanvas, _ps.Gold.X, _ps.Gold.Y, _ps.Gold.Width, _ps.Gold.Height, pctGold);
                 DrawPicture(pctCanvas, _ps.Stone.X, _ps.Stone.Y, _ps.Stone.Width, _ps.Stone.Height, pctStone);
-                DrawPicture(pctCanvas, _ps.Population.X, _ps.Population.Y, _ps.Population.Width, _ps.Population.Height, pctPopulation);
+                DrawPicture(pctCanvas, _ps.Housing.X, _ps.Housing.Y, _ps.Housing.Width, _ps.Housing.Height, pctPopulation);
+                DrawPicture(pctCanvas, _ps.NotWorking.X, _ps.NotWorking.Y, _ps.NotWorking.Width, _ps.NotWorking.Height, pctIdlePopulation);
             }
         }
 
@@ -196,12 +207,22 @@ namespace AoEDEAlarm {
                 }
 
                 if (rdoPopulation.Checked) {
-                    _ps.Population.X = sPos.X;
-                    _ps.Population.Y = sPos.Y;
-                    _ps.Population.Width = ePos.X - sPos.X;
-                    _ps.Population.Height = ePos.Y - sPos.Y;
+                    _ps.Housing.X = sPos.X;
+                    _ps.Housing.Y = sPos.Y;
+                    _ps.Housing.Width = ePos.X - sPos.X;
+                    _ps.Housing.Height = ePos.Y - sPos.Y;
 
                     DrawPicture(pctCanvas, sPos.X, sPos.Y, ePos.X - sPos.X, ePos.Y - sPos.Y, pctPopulation);
+                    return;
+                }
+
+                if (rdoIdlePopulation.Checked) {
+                    _ps.NotWorking.X = sPos.X;
+                    _ps.NotWorking.Y = sPos.Y;
+                    _ps.NotWorking.Width = ePos.X - sPos.X;
+                    _ps.NotWorking.Height = ePos.Y - sPos.Y;
+
+                    DrawPicture(pctCanvas, sPos.X, sPos.Y, ePos.X - sPos.X, ePos.Y - sPos.Y, pctIdlePopulation);
                     return;
                 }
 
@@ -258,10 +279,15 @@ namespace AoEDEAlarm {
             AoedeStaticGlobal.Settings.Stone.Width = _ps.Stone.Width;
             AoedeStaticGlobal.Settings.Stone.Height = _ps.Stone.Height;
 
-            AoedeStaticGlobal.Settings.Population.X = _ps.Population.X;
-            AoedeStaticGlobal.Settings.Population.Y = _ps.Population.Y;
-            AoedeStaticGlobal.Settings.Population.Width = _ps.Population.Width;
-            AoedeStaticGlobal.Settings.Population.Height = _ps.Population.Height;
+            AoedeStaticGlobal.Settings.Housing.X = _ps.Housing.X;
+            AoedeStaticGlobal.Settings.Housing.Y = _ps.Housing.Y;
+            AoedeStaticGlobal.Settings.Housing.Width = _ps.Housing.Width;
+            AoedeStaticGlobal.Settings.Housing.Height = _ps.Housing.Height;
+
+            AoedeStaticGlobal.Settings.NotWorking.X = _ps.NotWorking.X;
+            AoedeStaticGlobal.Settings.NotWorking.Y = _ps.NotWorking.Y;
+            AoedeStaticGlobal.Settings.NotWorking.Width = _ps.NotWorking.Width;
+            AoedeStaticGlobal.Settings.NotWorking.Height = _ps.NotWorking.Height;
 
             AoEDEAlarmSettings.SaveXml(AoedeStaticGlobal.Settings);
 
@@ -310,7 +336,12 @@ namespace AoEDEAlarm {
             }
 
             if (radioButtons[(int)ResourceKind.Population].Checked) {
-                g.DrawRectangle(bpen, _ps.Population.X, _ps.Population.Y, _ps.Population.Width, _ps.Population.Height);
+                g.DrawRectangle(bpen, _ps.Housing.X, _ps.Housing.Y, _ps.Housing.Width, _ps.Housing.Height);
+                return;
+            }
+
+            if (radioButtons[(int)ResourceKind.IdlePopulation].Checked) {
+                g.DrawRectangle(bpen, _ps.NotWorking.X, _ps.NotWorking.Y, _ps.NotWorking.Width, _ps.NotWorking.Height);
                 return;
             }
 

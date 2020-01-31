@@ -236,8 +236,8 @@ namespace AoEDEAlarm {
         }
 
         private static bool Check() {
-            if (AoedeStaticGlobal.Settings.Population.Height == 0) return false;
-            if (AoedeStaticGlobal.Settings.Population.Width == 0) return false;
+            if (AoedeStaticGlobal.Settings.Housing.Height == 0) return false;
+            if (AoedeStaticGlobal.Settings.Housing.Width == 0) return false;
             return true;
         }
 

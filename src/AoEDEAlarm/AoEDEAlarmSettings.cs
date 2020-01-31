@@ -14,11 +14,12 @@ namespace AoEDEAlarm {
         public int Hotkey_Stop;
         public int Hotkey_Customise;
 
-        public Rectangle Population { get; set; }
         public Rectangle Wood { get; set; }
         public Rectangle Food { get; set; }
         public Rectangle Gold { get; set; }
         public Rectangle Stone { get; set; }
+        public Rectangle Housing { get; set; }
+        public Rectangle NotWorking { get; set; }
 
         public class Rectangle {
             public int X { get; set; }
@@ -51,11 +52,12 @@ namespace AoEDEAlarm {
                     Hotkey_Run = (int)(Keys.R | Keys.Control | Keys.Shift),
                     Hotkey_Stop = (int)(Keys.S | Keys.Control | Keys.Shift),
                     Hotkey_Customise = (int)(Keys.C | Keys.Control | Keys.Shift),
-                    Population = new AoEDEAlarmSettings.Rectangle { X = 0, Y = 0, Width = 0, Height = 0, },
                     Food = new AoEDEAlarmSettings.Rectangle { X = 0, Y = 0, Width = 0, Height = 0, },
                     Wood = new AoEDEAlarmSettings.Rectangle { X = 0, Y = 0, Width = 0, Height = 0, },
                     Gold = new AoEDEAlarmSettings.Rectangle { X = 0, Y = 0, Width = 0, Height = 0, },
                     Stone = new AoEDEAlarmSettings.Rectangle { X = 0, Y = 0, Width = 0, Height = 0, },
+                    Housing = new AoEDEAlarmSettings.Rectangle { X = 0, Y = 0, Width = 0, Height = 0, },
+                    NotWorking = new AoEDEAlarmSettings.Rectangle { X = 0, Y = 0, Width = 0, Height = 0, },
                 };
                 return ttt;
             }

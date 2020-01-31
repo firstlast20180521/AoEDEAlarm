@@ -20,10 +20,12 @@ using Size = OpenCvSharp.Size;
 namespace AoEDEAlarm {
     class AoEDEAlarm : IDisposable {
 
-        System.Media.SoundPlayer _SoundPlayer = new System.Media.SoundPlayer();
+        System.Media.SoundPlayer _SoundPlayer_HouseLacking = new System.Media.SoundPlayer();
+        System.Media.SoundPlayer _SoundPlayer_JobNotAssigned = new System.Media.SoundPlayer();
 
         public AoEDEAlarm() {
-            _SoundPlayer = new System.Media.SoundPlayer(AoedeStaticGlobal.SoundFileName1);
+            _SoundPlayer_HouseLacking = new System.Media.SoundPlayer(AoedeStaticGlobal.SoundFileName_Housing);
+            _SoundPlayer_JobNotAssigned = new System.Media.SoundPlayer(AoedeStaticGlobal.SoundFileName_JobNotAssigned);
         }
 
         public async Task<bool> Run(CancellationToken token) {
@@ -41,56 +43,11 @@ namespace AoEDEAlarm {
                     //Bitmap bmp = Win32Api.CaptureActiveWindow();
 
                     //一旦ファイルに上書き保存
-                    //bmp.Save(AoedeGlobal.DebugBitmapFileName);
+                    //bmp.Save(AoedeStaticGlobal.DebugBitmapFileName1);
 
                     using (Mat mat = BitmapConverter.ToMat(bmp)) {
-                        //Cv2.ImShow("test", mat);
-
-                        Point loc = new Point(AoedeStaticGlobal.Settings.Population.X, AoedeStaticGlobal.Settings.Population.Y);
-                        Size sz = new Size(AoedeStaticGlobal.Settings.Population.Width, AoedeStaticGlobal.Settings.Population.Height);
-
-                        using (Mat mat2 = mat.Clone(new OpenCvSharp.Rect(loc, sz))) {
-
-                            using (Mat mat3 = Reverse(mat2)) {
-                                using (Mat mat4 = new Mat()) {
-                                    Cv2.Resize(mat3, mat4, new Size(mat3.Width * 3, mat3.Height * 3));
-                                    using (var tesseract = new TesseractEngine(AoedeStaticGlobal.TessdataPath, "eng", EngineMode.LstmOnly)) {
-                                        tesseract.SetVariable("tessedit_char_whitelist", "1234567890/");
-                                        var page = tesseract.Process(mat4.ToBitmap());
-                                        string text = page.GetText();
-
-                                        //最前面
-                                        //MessageBox.Show(text: $"->{text}<-"
-                                        //    , caption: "AoEDEAlarm"
-                                        //    , buttons: MessageBoxButtons.OK
-                                        //    , icon: MessageBoxIcon.Information
-                                        //    , defaultButton: MessageBoxDefaultButton.Button1
-                                        //    , options: MessageBoxOptions.DefaultDesktopOnly
-                                        //    );
-
-                                        //数値に分解
-                                        string[] arr = text.Split(new char[] { '/' });
-                                        if (arr.Length == 2) {
-                                            int x1;
-                                            int x2;
-                                            bool r1 = int.TryParse(arr[0], out x1);
-                                            bool r2 = int.TryParse(arr[1], out x2);
-                                            if (r1 && r2) {
-                                                if (x2 - x1 <= 1) {
-                                                    //アラーム音を出す。
-                                                    _SoundPlayer.PlaySync();
-                                                }
-                                            }
-                                        }
-                                        //await Task.Delay(1000);
-
-                                    }
-
-
-                                }
-                            }
-                        }
-
+                        CheckNotWorking(mat);
+                        CheckHousingShortage(mat);
                     }
                 }
                 await Task.Delay(1000);
@@ -98,6 +55,99 @@ namespace AoEDEAlarm {
 
             //}
             return true;
+        }
+
+        private void CheckHousingShortage(Mat mat) {
+            Point loc = new Point(AoedeStaticGlobal.Settings.Housing.X, AoedeStaticGlobal.Settings.Housing.Y);
+            Size sz = new Size(AoedeStaticGlobal.Settings.Housing.Width, AoedeStaticGlobal.Settings.Housing.Height);
+
+            using (Mat mat2 = mat.Clone(new OpenCvSharp.Rect(loc, sz))) {
+
+                using (Mat mat3 = Reverse(mat2)) {
+                    using (Mat mat4 = new Mat()) {
+                        Cv2.Resize(mat3, mat4, new Size(mat3.Width * 3, mat3.Height * 3));
+
+                        mat4.ImWrite(AoedeStaticGlobal.DebugBitmapFileName1);
+
+                        using (var tesseract = new TesseractEngine(AoedeStaticGlobal.TessdataPath, "eng", EngineMode.LstmOnly)) {
+                            tesseract.SetVariable("tessedit_char_whitelist", "1234567890/");
+                            var page = tesseract.Process(mat4.ToBitmap());
+                            string text = page.GetText();
+
+                            //最前面
+                            //MessageBox.Show(text: $"->{text}<-"
+                            //    , caption: "AoEDEAlarm"
+                            //    , buttons: MessageBoxButtons.OK
+                            //    , icon: MessageBoxIcon.Information
+                            //    , defaultButton: MessageBoxDefaultButton.Button1
+                            //    , options: MessageBoxOptions.DefaultDesktopOnly
+                            //    );
+
+                            //数値に分解
+                            string[] arr = text.Split(new char[] { '/' });
+                            if (arr.Length == 2) {
+                                int x1;
+                                int x2;
+                                bool r1 = int.TryParse(arr[0], out x1);
+                                bool r2 = int.TryParse(arr[1], out x2);
+                                if (r1 && r2) {
+                                    if (x2 - x1 <= 1) {
+                                        //アラーム音を出す。
+                                        _SoundPlayer_HouseLacking.PlaySync();
+                                    }
+                                }
+                            }
+                            //await Task.Delay(1000);
+
+                        }
+
+
+                    }
+                }
+            }
+
+        }
+
+        private void CheckNotWorking(Mat mat) {
+            Point loc = new Point(AoedeStaticGlobal.Settings.NotWorking.X, AoedeStaticGlobal.Settings.NotWorking.Y);
+            Size sz = new Size(AoedeStaticGlobal.Settings.NotWorking.Width, AoedeStaticGlobal.Settings.NotWorking.Height);
+            using (Mat mat2 = mat.Clone(new OpenCvSharp.Rect(loc, sz))) {
+                using (var mat_hsv = mat2.CvtColor(ColorConversionCodes.BGR2HSV)) {
+                    InputArray lower_white = InputArray.Create(new int[3] { 0, 0, 100 });
+                    InputArray upper_white = InputArray.Create(new int[3] { 180, 45, 255 });
+                    using (Mat mat_mask_white = mat_hsv.InRange(lower_white, upper_white)) {
+                        using (Mat mat_reversed = Reverse(mat_mask_white)) {
+                            Cv2.Resize(mat_reversed, mat_reversed, new Size(mat_reversed.Width * 3, mat_reversed.Height * 3));
+                            Cv2.ImShow("Input image for Tesseract", mat_reversed);
+                            Cv2.WaitKey(1000);
+                            using (var tesseract = new TesseractEngine(AoedeStaticGlobal.TessdataPath, "eng", EngineMode.LstmOnly)) {
+                                tesseract.SetVariable("tessedit_char_whitelist", "1234567890");
+                                var page = tesseract.Process(mat_reversed.ToBitmap());
+                                string text = page.GetText();
+
+                                //最前面
+                                //MessageBox.Show(text: $"->{text}<-"
+                                //    , caption: "AoEDEAlarm"
+                                //    , buttons: MessageBoxButtons.OK
+                                //    , icon: MessageBoxIcon.Information
+                                //    , defaultButton: MessageBoxDefaultButton.Button1
+                                //    , options: MessageBoxOptions.DefaultDesktopOnly
+                                //    );
+
+                                int x1;
+                                bool r1 = int.TryParse(text, out x1);
+                                if (r1) {
+                                    if (x1 > 0) {
+                                        //アラーム音を出す。
+                                        _SoundPlayer_JobNotAssigned.PlaySync();
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
         }
 
         public static Mat Reverse(Mat src) {
@@ -119,6 +169,19 @@ namespace AoEDEAlarm {
             //Cv2.ImShow("image", src);
             //Cv2.WaitKey();
 
+        }
+
+        public void Reverse2(Mat mat) {
+
+            for (var y = 0; y < mat.Height; y++) {
+                for (var x = 0; x < mat.Width; x++) {
+                    var px = mat.Get<Vec3b>(y, x);
+                    px[0] = (byte)(255 - px[0]);
+                    px[1] = (byte)(255 - px[1]);
+                    px[2] = (byte)(255 - px[2]);
+                    mat.Set(y, x, px);
+                }
+            }
         }
 
 
