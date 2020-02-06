@@ -6,35 +6,24 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Media;
 
 namespace AoEDEAlarm {
-    public static class AoedeStaticGlobal {
-        public static AoEDEAlarmSettings Settings;
-
-        public static CancellationTokenSource tokenSource = null;
-        public static bool IsRunning;
-
+    public static class ConstValues {
         public static string WorkDirectoryPath { get; set; }
         public static string TessdataPath { get; set; }
         public static string SoundPath { get; set; }
         public static string DocumentPath { get; set; }
+        public static string ImagePath { get; set; }
 
-        public static string SettingFileName { get; set; }
-        public static string SoundFileName_Housing { get; set; }
-        public static string SoundFileName_JobNotAssigned { get; set; }
+        public static string ApplicationSettingFileName { get; set; }
+        public static string SoundSettingFileName { get; set; }
         public static string HelpFileName { get; set; }
         public static string DebugBitmapFileName1 { get; set; }
         public static string DebugBitmapFileName2 { get; set; }
-        //public static string DebugBitmapFileName3 { get; set; }
-        //public static string DebugBitmapFileName4 { get; set; }
-        //public static string DebugBitmapFileName5 { get; set; }
-        //public static string DebugBitmapFileName6 { get; set; }
 
-        static AoedeStaticGlobal() {
-
+        static ConstValues() {
             Assembly assm = Assembly.GetExecutingAssembly();
-            IsRunning = false;
-
             string executing_directory_name = Path.GetDirectoryName(assm.Location);
 
             WorkDirectoryPath = Path.Combine(executing_directory_name, "work");
@@ -45,10 +34,12 @@ namespace AoEDEAlarm {
             TessdataPath = Path.Combine(executing_directory_name, "tessdata");
             SoundPath = Path.Combine(executing_directory_name, "sound");
             DocumentPath = Path.Combine(executing_directory_name, "doc");
+            ImagePath = Path.Combine(executing_directory_name, "image");
 
-            SettingFileName = Path.Combine(executing_directory_name, @"setting.xml");
-            SoundFileName_Housing = Path.Combine(SoundPath, @"Windows Balloon.wav");
-            SoundFileName_JobNotAssigned = Path.Combine(SoundPath, @"chord.wav");
+            ApplicationSettingFileName = Path.Combine(executing_directory_name, @"application_setting.xml");
+            SoundSettingFileName = Path.Combine(executing_directory_name, @"sound_setting.xml");
+            //SoundFileName_Housing = Path.Combine(SoundPath, @"Windows Balloon.wav");
+            //SoundFileName_JobNotAssigned = Path.Combine(SoundPath, @"chord.wav");
             HelpFileName = Path.Combine(DocumentPath, @"Help.htm");
             DebugBitmapFileName1 = Path.Combine(WorkDirectoryPath, @"xxx1.bmp");
             DebugBitmapFileName2 = Path.Combine(WorkDirectoryPath, @"xxx2.bmp");

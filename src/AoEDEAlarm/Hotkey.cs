@@ -20,6 +20,7 @@ namespace AoEDEAlarm {
 
         //[DllImport("kernel32", EntryPoint = "GlobalAddAtomA", CharSet = CharSet.Unicode)]
         [DllImport("kernel32", EntryPoint = "GlobalAddAtomA")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA2101:Specify marshaling for P/Invoke string arguments", Justification = "<•Û—¯’†>")]
         static extern short GlobalAddAtom(string lpString);
 
         [DllImport("kernel32")]

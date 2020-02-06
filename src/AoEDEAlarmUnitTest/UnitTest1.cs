@@ -6,7 +6,7 @@ namespace AoEDEAlarmUnitTest {
     public class UnitTest1 {
         [TestMethod]
         public void TestMethod1() {
-            string result = AoEDEAlarm.AoedeStaticGlobal.TessdataPath;
+            string result = AoEDEAlarm.ConstValues.TessdataPath;
             Assert.AreNotEqual("", result);
         }
     }

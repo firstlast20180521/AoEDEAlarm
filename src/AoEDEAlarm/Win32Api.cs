@@ -13,6 +13,7 @@ namespace AoEDEAlarm {
         public static extern IntPtr GetForegroundWindow();
 
         [DllImport("user32.dll", EntryPoint = "GetWindowText", CharSet = CharSet.Auto)]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA2101:Specify marshaling for P/Invoke string arguments", Justification = "<保留中>")]
         public static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
 
         [DllImport("user32.dll")]
@@ -30,7 +31,7 @@ namespace AoEDEAlarm {
                     //System.Diagnostics.Debug.WriteLine(p.MainModule.FileVersionInfo.ProductName);//アプリケーションの名前が出てきます
                     r = p.MainModule.FileVersionInfo.ProductName;
                 }
-            } catch (System.ComponentModel.Win32Exception e) {
+            } catch (System.ComponentModel.Win32Exception) {
             }
 
             return r;

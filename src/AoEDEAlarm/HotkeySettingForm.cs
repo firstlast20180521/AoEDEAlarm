@@ -25,9 +25,9 @@ namespace AoEDEAlarm {
         private void HotkeySettingForm_Load(object sender, EventArgs e) {
 
             KeysArr = new Keys[3];
-            KeysArr[0] = (Keys)AoedeStaticGlobal.Settings.Hotkey_Run;
-            KeysArr[1] = (Keys)AoedeStaticGlobal.Settings.Hotkey_Stop;
-            KeysArr[2] = (Keys)AoedeStaticGlobal.Settings.Hotkey_Customise;
+            KeysArr[0] = (Keys)GlobalValues.ApplicationSetting.Hotkey_Run;
+            KeysArr[1] = (Keys)GlobalValues.ApplicationSetting.Hotkey_Stop;
+            KeysArr[2] = (Keys)GlobalValues.ApplicationSetting.Hotkey_Customise;
 
             dataGridView1.ClipboardCopyMode = DataGridViewClipboardCopyMode.Disable;
             //dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
@@ -132,11 +132,12 @@ namespace AoEDEAlarm {
 
         private void button1_Click(object sender, EventArgs e) {
 
-            AoedeStaticGlobal.Settings.Hotkey_Run = (int)KeysArr[0];
-            AoedeStaticGlobal.Settings.Hotkey_Stop = (int)KeysArr[1];
-            AoedeStaticGlobal.Settings.Hotkey_Customise = (int)KeysArr[2];
+            GlobalValues.ApplicationSetting.Hotkey_Run = (int)KeysArr[0];
+            GlobalValues.ApplicationSetting.Hotkey_Stop = (int)KeysArr[1];
+            GlobalValues.ApplicationSetting.Hotkey_Customise = (int)KeysArr[2];
 
-            AoEDEAlarmSettings.SaveXml(AoedeStaticGlobal.Settings);
+            TempClass<ApplicationSettingClass>.SaveXml(GlobalValues.ApplicationSetting, ConstValues.ApplicationSettingFileName);
+            TempClass<SoundSettingClass>.SaveXml(GlobalValues.SoundSetting, ConstValues.SoundSettingFileName);
 
             MessageBox.Show(text: "位置を保存しました。"
                 , caption: "画像位置設定"

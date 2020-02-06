@@ -32,47 +32,47 @@ namespace AoEDEAlarm {
         private RadioButton[] radioButtons = new RadioButton[Enum.GetNames(typeof(ResourceKind)).Length];
         private PictureBox[] pictureBoxes = new PictureBox[Enum.GetNames(typeof(ResourceKind)).Length];
 
-        AoEDEAlarmSettings _ps = new AoEDEAlarmSettings {
-            Wood = new AoEDEAlarmSettings.Rectangle {
-                X = AoedeStaticGlobal.Settings.Wood.X,
-                Y = AoedeStaticGlobal.Settings.Wood.Y,
-                Width = AoedeStaticGlobal.Settings.Wood.Width,
-                Height = AoedeStaticGlobal.Settings.Wood.Height,
+        ApplicationSettingClass _ps = new ApplicationSettingClass {
+            Wood = new ApplicationSettingClass.Rectangle {
+                X = GlobalValues.ApplicationSetting.Wood.X,
+                Y = GlobalValues.ApplicationSetting.Wood.Y,
+                Width = GlobalValues.ApplicationSetting.Wood.Width,
+                Height = GlobalValues.ApplicationSetting.Wood.Height,
             },
 
-            Food = new AoEDEAlarmSettings.Rectangle {
-                X = AoedeStaticGlobal.Settings.Food.X,
-                Y = AoedeStaticGlobal.Settings.Food.Y,
-                Width = AoedeStaticGlobal.Settings.Food.Width,
-                Height = AoedeStaticGlobal.Settings.Food.Height,
+            Food = new ApplicationSettingClass.Rectangle {
+                X = GlobalValues.ApplicationSetting.Food.X,
+                Y = GlobalValues.ApplicationSetting.Food.Y,
+                Width = GlobalValues.ApplicationSetting.Food.Width,
+                Height = GlobalValues.ApplicationSetting.Food.Height,
             },
 
-            Gold = new AoEDEAlarmSettings.Rectangle {
-                X = AoedeStaticGlobal.Settings.Gold.X,
-                Y = AoedeStaticGlobal.Settings.Gold.Y,
-                Width = AoedeStaticGlobal.Settings.Gold.Width,
-                Height = AoedeStaticGlobal.Settings.Gold.Height,
+            Gold = new ApplicationSettingClass.Rectangle {
+                X = GlobalValues.ApplicationSetting.Gold.X,
+                Y = GlobalValues.ApplicationSetting.Gold.Y,
+                Width = GlobalValues.ApplicationSetting.Gold.Width,
+                Height = GlobalValues.ApplicationSetting.Gold.Height,
             },
 
-            Stone = new AoEDEAlarmSettings.Rectangle {
-                X = AoedeStaticGlobal.Settings.Stone.X,
-                Y = AoedeStaticGlobal.Settings.Stone.Y,
-                Width = AoedeStaticGlobal.Settings.Stone.Width,
-                Height = AoedeStaticGlobal.Settings.Stone.Height,
+            Stone = new ApplicationSettingClass.Rectangle {
+                X = GlobalValues.ApplicationSetting.Stone.X,
+                Y = GlobalValues.ApplicationSetting.Stone.Y,
+                Width = GlobalValues.ApplicationSetting.Stone.Width,
+                Height = GlobalValues.ApplicationSetting.Stone.Height,
             },
 
-            Housing = new AoEDEAlarmSettings.Rectangle {
-                X = AoedeStaticGlobal.Settings.Housing.X,
-                Y = AoedeStaticGlobal.Settings.Housing.Y,
-                Width = AoedeStaticGlobal.Settings.Housing.Width,
-                Height = AoedeStaticGlobal.Settings.Housing.Height,
+            Housing = new ApplicationSettingClass.Rectangle {
+                X = GlobalValues.ApplicationSetting.Housing.X,
+                Y = GlobalValues.ApplicationSetting.Housing.Y,
+                Width = GlobalValues.ApplicationSetting.Housing.Width,
+                Height = GlobalValues.ApplicationSetting.Housing.Height,
             },
 
-            NotWorking = new AoEDEAlarmSettings.Rectangle {
-                X = AoedeStaticGlobal.Settings.NotWorking.X,
-                Y = AoedeStaticGlobal.Settings.NotWorking.Y,
-                Width = AoedeStaticGlobal.Settings.NotWorking.Width,
-                Height = AoedeStaticGlobal.Settings.NotWorking.Height,
+            NotWorking = new ApplicationSettingClass.Rectangle {
+                X = GlobalValues.ApplicationSetting.NotWorking.X,
+                Y = GlobalValues.ApplicationSetting.NotWorking.Y,
+                Width = GlobalValues.ApplicationSetting.NotWorking.Width,
+                Height = GlobalValues.ApplicationSetting.NotWorking.Height,
             },
 
         };
@@ -259,37 +259,76 @@ namespace AoEDEAlarm {
         }
 
         private void button1_Click(object sender, EventArgs e) {
-            AoedeStaticGlobal.Settings.Wood.X = _ps.Wood.X;
-            AoedeStaticGlobal.Settings.Wood.Y = _ps.Wood.Y;
-            AoedeStaticGlobal.Settings.Wood.Width = _ps.Wood.Width;
-            AoedeStaticGlobal.Settings.Wood.Height = _ps.Wood.Height;
 
-            AoedeStaticGlobal.Settings.Food.X = _ps.Food.X;
-            AoedeStaticGlobal.Settings.Food.Y = _ps.Food.Y;
-            AoedeStaticGlobal.Settings.Food.Width = _ps.Food.Width;
-            AoedeStaticGlobal.Settings.Food.Height = _ps.Food.Height;
+            SaveData();
+            this.Close();
+        }
 
-            AoedeStaticGlobal.Settings.Gold.X = _ps.Gold.X;
-            AoedeStaticGlobal.Settings.Gold.Y = _ps.Gold.Y;
-            AoedeStaticGlobal.Settings.Gold.Width = _ps.Gold.Width;
-            AoedeStaticGlobal.Settings.Gold.Height = _ps.Gold.Height;
+        private void button2_Click(object sender, EventArgs e) {
+            this.Close();
 
-            AoedeStaticGlobal.Settings.Stone.X = _ps.Stone.X;
-            AoedeStaticGlobal.Settings.Stone.Y = _ps.Stone.Y;
-            AoedeStaticGlobal.Settings.Stone.Width = _ps.Stone.Width;
-            AoedeStaticGlobal.Settings.Stone.Height = _ps.Stone.Height;
+        }
 
-            AoedeStaticGlobal.Settings.Housing.X = _ps.Housing.X;
-            AoedeStaticGlobal.Settings.Housing.Y = _ps.Housing.Y;
-            AoedeStaticGlobal.Settings.Housing.Width = _ps.Housing.Width;
-            AoedeStaticGlobal.Settings.Housing.Height = _ps.Housing.Height;
+        private void button3_Click(object sender, EventArgs e) {
+            SaveData();
 
-            AoedeStaticGlobal.Settings.NotWorking.X = _ps.NotWorking.X;
-            AoedeStaticGlobal.Settings.NotWorking.Y = _ps.NotWorking.Y;
-            AoedeStaticGlobal.Settings.NotWorking.Width = _ps.NotWorking.Width;
-            AoedeStaticGlobal.Settings.NotWorking.Height = _ps.NotWorking.Height;
+        }
 
-            AoEDEAlarmSettings.SaveXml(AoedeStaticGlobal.Settings);
+        private void SaveData() {
+            //10,23 
+            if (_ps.NotWorking.Width < 23) {
+                MessageBox.Show(text: "遊び農民の幅が足りません。"
+                    , caption: "画像位置設定"
+                    , buttons: MessageBoxButtons.OK
+                    , icon: MessageBoxIcon.Error
+                    , defaultButton: MessageBoxDefaultButton.Button1
+                    , options: MessageBoxOptions.DefaultDesktopOnly
+                    );
+                return;
+            }
+
+            if (_ps.NotWorking.Height < 10) {
+                MessageBox.Show(text: "遊び農民の高さが足りません。"
+                    , caption: "画像位置設定"
+                    , buttons: MessageBoxButtons.OK
+                    , icon: MessageBoxIcon.Error
+                    , defaultButton: MessageBoxDefaultButton.Button1
+                    , options: MessageBoxOptions.DefaultDesktopOnly
+                    );
+                return;
+            }
+
+            GlobalValues.ApplicationSetting.Wood.X = _ps.Wood.X;
+            GlobalValues.ApplicationSetting.Wood.Y = _ps.Wood.Y;
+            GlobalValues.ApplicationSetting.Wood.Width = _ps.Wood.Width;
+            GlobalValues.ApplicationSetting.Wood.Height = _ps.Wood.Height;
+
+            GlobalValues.ApplicationSetting.Food.X = _ps.Food.X;
+            GlobalValues.ApplicationSetting.Food.Y = _ps.Food.Y;
+            GlobalValues.ApplicationSetting.Food.Width = _ps.Food.Width;
+            GlobalValues.ApplicationSetting.Food.Height = _ps.Food.Height;
+
+            GlobalValues.ApplicationSetting.Gold.X = _ps.Gold.X;
+            GlobalValues.ApplicationSetting.Gold.Y = _ps.Gold.Y;
+            GlobalValues.ApplicationSetting.Gold.Width = _ps.Gold.Width;
+            GlobalValues.ApplicationSetting.Gold.Height = _ps.Gold.Height;
+
+            GlobalValues.ApplicationSetting.Stone.X = _ps.Stone.X;
+            GlobalValues.ApplicationSetting.Stone.Y = _ps.Stone.Y;
+            GlobalValues.ApplicationSetting.Stone.Width = _ps.Stone.Width;
+            GlobalValues.ApplicationSetting.Stone.Height = _ps.Stone.Height;
+
+            GlobalValues.ApplicationSetting.Housing.X = _ps.Housing.X;
+            GlobalValues.ApplicationSetting.Housing.Y = _ps.Housing.Y;
+            GlobalValues.ApplicationSetting.Housing.Width = _ps.Housing.Width;
+            GlobalValues.ApplicationSetting.Housing.Height = _ps.Housing.Height;
+
+            GlobalValues.ApplicationSetting.NotWorking.X = _ps.NotWorking.X;
+            GlobalValues.ApplicationSetting.NotWorking.Y = _ps.NotWorking.Y;
+            GlobalValues.ApplicationSetting.NotWorking.Width = _ps.NotWorking.Width;
+            GlobalValues.ApplicationSetting.NotWorking.Height = _ps.NotWorking.Height;
+
+            TempClass<ApplicationSettingClass>.SaveXml(GlobalValues.ApplicationSetting, ConstValues.ApplicationSettingFileName);
 
             MessageBox.Show(text: "位置を保存しました。"
                 , caption: "画像位置設定"
@@ -298,12 +337,6 @@ namespace AoEDEAlarm {
                 , defaultButton: MessageBoxDefaultButton.Button1
                 , options: MessageBoxOptions.DefaultDesktopOnly
                 );
-
-            this.Close();
-        }
-
-        private void button2_Click(object sender, EventArgs e) {
-            this.Close();
 
         }
 
