@@ -1,26 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace AoEDEAlarm {
-    static class GlobalValuesClass2 {
-        public static NAudioWaveHelper NAudio_Housing;
-        public static NAudioWaveHelper NAudio_NotWorking;
-        public static NAudioWaveHelper NAudio_WoodStock;
-        public static NAudioWaveHelper NAudio_FoodStock;
-        public static NAudioWaveHelper NAudio_GoldStock;
-        public static NAudioWaveHelper NAudio_StoneStock;
+     public static class GlobalValues2 {
+        public static NAudioWaveHelper AudioHelper_Housing { get; set; }
+        public static NAudioWaveHelper AudioHelper_NotWorking { get; set; }
+        public static NAudioWaveHelper AudioHelper_WoodStock { get; set; }
+        public static NAudioWaveHelper AudioHelper_FoodStock { get; set; }
+        public static NAudioWaveHelper AudioHelper_GoldStock { get; set; }
+        public static NAudioWaveHelper AudioHelper_StoneStock { get; set; }
 
-
-        static GlobalValuesClass2() {
-            NAudio_Housing = new NAudioWaveHelper(GlobalValues.SoundSetting.Housing.FileName, GlobalValues.SoundSetting.Housing.Volume);
-            NAudio_NotWorking = new NAudioWaveHelper(GlobalValues.SoundSetting.NotWorking.FileName, GlobalValues.SoundSetting.NotWorking.Volume);
-            NAudio_WoodStock = new NAudioWaveHelper(GlobalValues.SoundSetting.WoodStock.FileName, GlobalValues.SoundSetting.WoodStock.Volume);
-            NAudio_FoodStock = new NAudioWaveHelper(GlobalValues.SoundSetting.FoodStock.FileName, GlobalValues.SoundSetting.FoodStock.Volume);
-            NAudio_GoldStock = new NAudioWaveHelper(GlobalValues.SoundSetting.GoldStock.FileName, GlobalValues.SoundSetting.GoldStock.Volume);
-            NAudio_StoneStock = new NAudioWaveHelper(GlobalValues.SoundSetting.StoneStock.FileName, GlobalValues.SoundSetting.StoneStock.Volume);
+        static GlobalValues2() {
+            //音源ファイルと音量を指定する。
+            AudioHelper_Housing = new NAudioWaveHelper(Path.Combine(ConstValues.SoundPath, GlobalValues.SoundSetting.Housing.FileName), GlobalValues.SoundSetting.Housing.Volume);
+            AudioHelper_NotWorking = new NAudioWaveHelper(Path.Combine(ConstValues.SoundPath, GlobalValues.SoundSetting.NotWorking.FileName), GlobalValues.SoundSetting.NotWorking.Volume);
+            AudioHelper_WoodStock = new NAudioWaveHelper(Path.Combine(ConstValues.SoundPath, GlobalValues.SoundSetting.WoodStock.FileName), GlobalValues.SoundSetting.WoodStock.Volume);
+            AudioHelper_FoodStock = new NAudioWaveHelper(Path.Combine(ConstValues.SoundPath, GlobalValues.SoundSetting.FoodStock.FileName), GlobalValues.SoundSetting.FoodStock.Volume);
+            AudioHelper_GoldStock = new NAudioWaveHelper(Path.Combine(ConstValues.SoundPath, GlobalValues.SoundSetting.GoldStock.FileName), GlobalValues.SoundSetting.GoldStock.Volume);
+            AudioHelper_StoneStock = new NAudioWaveHelper(Path.Combine(ConstValues.SoundPath, GlobalValues.SoundSetting.StoneStock.FileName), GlobalValues.SoundSetting.StoneStock.Volume);
 
         }
     }

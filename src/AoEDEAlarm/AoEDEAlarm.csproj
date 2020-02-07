@@ -72,6 +72,7 @@
     <Compile Include="AoEDEAlarm.cs" />
     <Compile Include="ConstValues.cs" />
     <Compile Include="GlobalValues.cs" />
+    <Compile Include="GlobalValues2.cs" />
     <Compile Include="Hotkey.cs" />
     <Compile Include="HotkeySettingForm.cs">
       <SubType>Form</SubType>
@@ -80,6 +81,11 @@
       <DependentUpon>HotkeySettingForm.cs</DependentUpon>
     </Compile>
     <Compile Include="NAudioWaveHelper.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
     <Compile Include="SoundSettingClass.cs" />
     <Compile Include="TempClass.cs" />
     <Compile Include="TransparentForm.cs">
@@ -115,6 +121,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
     <None Include="tessdata\eng.traineddata">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

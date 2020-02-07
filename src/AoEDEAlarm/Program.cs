@@ -56,7 +56,7 @@ namespace AoEDEAlarm {
                     NotifyIcon ni = SetNotifyIcon();
 
                     GlobalValues.Console.Show();
-                    GlobalValues.Console.Start("監視処理を開始しました。");
+                    //GlobalValues.Console.Start("監視処理を開始しました。");
 
                     System.Windows.Forms.Application.Run();
 
@@ -302,14 +302,14 @@ namespace AoEDEAlarm {
             } catch (Exception) {
             }
 
-            //最前面
-            MessageBox.Show(text: $"アプリケーションを終了します。"
-                , caption: "AoEDEAlarm"
-                , buttons: MessageBoxButtons.OK
-                , icon: MessageBoxIcon.Information
-                , defaultButton: MessageBoxDefaultButton.Button1
-                , options: MessageBoxOptions.DefaultDesktopOnly
-                );
+            ////最前面
+            //MessageBox.Show(text: $"アプリケーションを終了します。"
+            //    , caption: "AoEDEAlarm"
+            //    , buttons: MessageBoxButtons.OK
+            //    , icon: MessageBoxIcon.Information
+            //    , defaultButton: MessageBoxDefaultButton.Button1
+            //    , options: MessageBoxOptions.DefaultDesktopOnly
+            //    );
 
             Application.Exit();
 

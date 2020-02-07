@@ -74,6 +74,18 @@ namespace AoEDEAlarm {
             SetWindowPos(this.Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
             //SetWindowPos(this.Handle, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_SHOWWINDOW | SWP_NOMOVE | SWP_NOSIZE);
 
+            _BackData.Add(new BackData() { TimeStump = DateTime.Now, Message = $"監視開始：{HotKey.GetKeysString((Keys)GlobalValues.ApplicationSetting.Hotkey_Run)}" });
+            _BackData.Add(new BackData() { TimeStump = DateTime.Now, Message = $"監視中断：{HotKey.GetKeysString((Keys)GlobalValues.ApplicationSetting.Hotkey_Stop)}" });
+            _BackData.Add(new BackData() { TimeStump = DateTime.Now, Message = $"位置設定：{HotKey.GetKeysString((Keys)GlobalValues.ApplicationSetting.Hotkey_Customise)}" });
+            //テキストボックスに反映する。
+            StringBuilder sb = new StringBuilder();
+            foreach (BackData x in _BackData) {
+                sb.AppendLine(x.Message);
+            }
+            this.textBox1.Text = sb.ToString();
+
+
+            this.Location = Properties.Settings.Default.FormPosition;
         }
 
         private void Msg_MouseDown(object sender, MouseEventArgs e) {
@@ -115,6 +127,38 @@ namespace AoEDEAlarm {
             } else {
                 this.Opacity = 0.5;
             }
+
+        }
+
+        private void TransparentForm_FormClosing(object sender, FormClosingEventArgs e) {
+
+            //フォーム位置の保存
+            Properties.Settings.Default.FormPosition = this.Location;
+            Properties.Settings.Default.Save();
+
+            if (e.CloseReason == CloseReason.ApplicationExitCall) return;
+
+            //最前面
+            var rtn = MessageBox.Show(text: $"アプリケーションを終了してよろしいですか？"
+                , caption: "AoEDEAlarm"
+                , buttons: MessageBoxButtons.OKCancel
+                , icon: MessageBoxIcon.Information
+                , defaultButton: MessageBoxDefaultButton.Button1
+                , options: MessageBoxOptions.DefaultDesktopOnly
+                );
+
+            if (rtn==DialogResult.Cancel) {
+                e.Cancel = true;
+                return;
+            }
+
+
+            try {
+                GlobalValues.tokenSource?.Cancel();
+            } catch (Exception) {
+            }
+
+            Application.Exit();
 
         }
 

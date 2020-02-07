@@ -63,7 +63,8 @@ namespace AoEDEAlarm {
                         int woodValue = CheckWood(mat);
                         if (woodValue >= GlobalValues.SoundSetting.WoodStock.AlarmValue) {
                             if (!isAlarmed) {
-                                NAudioWaveHelper.Play_Sound_x(GlobalValues.SoundSetting.WoodStock.FileName, GlobalValues.SoundSetting.WoodStock.Volume);
+                                //NAudioWaveHelper.Play_Sound_x(GlobalValues.SoundSetting.WoodStock.FileName, GlobalValues.SoundSetting.WoodStock.Volume);
+                                GlobalValues2.AudioHelper_WoodStock.Play();
                                 isAlarmed = true;
                             }
                             GlobalValues.Console.Invoke((MethodInvoker)delegate {
@@ -78,7 +79,8 @@ namespace AoEDEAlarm {
                         int foodValue = CheckFood(mat);
                         if (foodValue >= GlobalValues.SoundSetting.FoodStock.AlarmValue) {
                             if (!isAlarmed) {
-                                NAudioWaveHelper.Play_Sound_x(GlobalValues.SoundSetting.FoodStock.FileName, GlobalValues.SoundSetting.FoodStock.Volume);
+                                //NAudioWaveHelper.Play_Sound_x(GlobalValues.SoundSetting.FoodStock.FileName, GlobalValues.SoundSetting.FoodStock.Volume);
+                                GlobalValues2.AudioHelper_FoodStock.Play();
                                 isAlarmed = true;
                             }
                             GlobalValues.Console.Invoke((MethodInvoker)delegate {
@@ -93,7 +95,8 @@ namespace AoEDEAlarm {
                         int goldValue = CheckGold(mat);
                         if (goldValue >= GlobalValues.SoundSetting.GoldStock.AlarmValue) {
                             if (!isAlarmed) {
-                                NAudioWaveHelper.Play_Sound_x(GlobalValues.SoundSetting.GoldStock.FileName, GlobalValues.SoundSetting.GoldStock.Volume);
+                                //NAudioWaveHelper.Play_Sound_x(GlobalValues.SoundSetting.GoldStock.FileName, GlobalValues.SoundSetting.GoldStock.Volume);
+                                GlobalValues2.AudioHelper_GoldStock.Play();
                                 isAlarmed = true;
                             }
                             GlobalValues.Console.Invoke((MethodInvoker)delegate {
@@ -108,7 +111,8 @@ namespace AoEDEAlarm {
                         int stoneValue = CheckStone(mat);
                         if (stoneValue >= GlobalValues.SoundSetting.StoneStock.AlarmValue) {
                             if (!isAlarmed) {
-                                NAudioWaveHelper.Play_Sound_x(GlobalValues.SoundSetting.StoneStock.FileName, GlobalValues.SoundSetting.StoneStock.Volume);
+                                //NAudioWaveHelper.Play_Sound_x(GlobalValues.SoundSetting.StoneStock.FileName, GlobalValues.SoundSetting.StoneStock.Volume);
+                                GlobalValues2.AudioHelper_StoneStock.Play();
                                 isAlarmed = true;
                             }
                             GlobalValues.Console.Invoke((MethodInvoker)delegate {
@@ -125,8 +129,9 @@ namespace AoEDEAlarm {
                         if (rtn2) {
                             if (numberNotWorking >= GlobalValues.SoundSetting.NotWorking.AlarmValue) {
                                 //アラーム音を出す。
-                                if (!isAlarmed) { 
-                                    NAudioWaveHelper.Play_Sound_x(GlobalValues.SoundSetting.NotWorking.FileName, GlobalValues.SoundSetting.NotWorking.Volume);
+                                if (!isAlarmed) {
+                                    //NAudioWaveHelper.Play_Sound_x(GlobalValues.SoundSetting.NotWorking.FileName, GlobalValues.SoundSetting.NotWorking.Volume);
+                                    GlobalValues2.AudioHelper_NotWorking.Play();
                                     isAlarmed = true;
                                 }
                                 GlobalValues.Console.Invoke((MethodInvoker)delegate {
@@ -144,8 +149,9 @@ namespace AoEDEAlarm {
                         bool rtn1 = CheckHousingShortage(mat, out popNumerator, out popDenominator);
                         if (rtn1) {
                             if (popDenominator - popNumerator <= GlobalValues.SoundSetting.Housing.AlarmValue) {
-                                if (!isAlarmed) { 
-                                    NAudioWaveHelper.Play_Sound_x(GlobalValues.SoundSetting.Housing.FileName, GlobalValues.SoundSetting.Housing.Volume);
+                                if (!isAlarmed) {
+                                    //NAudioWaveHelper.Play_Sound_x(GlobalValues.SoundSetting.Housing.FileName, GlobalValues.SoundSetting.Housing.Volume);
+                                    GlobalValues2.AudioHelper_Housing.Play();
                                     isAlarmed = true;
                                 }
                                 GlobalValues.Console.Invoke((MethodInvoker)delegate {
@@ -348,7 +354,7 @@ namespace AoEDEAlarm {
                         rtn1 = OpenCvUtil.FindImage(mat2, mat3);
                         if (rtn1 > max_value) {
                             max_value = rtn1;
-                            max_x= Path.GetFileNameWithoutExtension(files[i]);
+                            max_x = Path.GetFileNameWithoutExtension(files[i]);
                         }
                     }
                 }

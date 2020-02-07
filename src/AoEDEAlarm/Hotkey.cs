@@ -6,7 +6,7 @@ using System.Text;
 using System.Windows.Forms;
 
 namespace AoEDEAlarm {
-    public class HotKey : IDisposable {
+    public sealed class HotKey : IDisposable {
         private const int MOD_ALT = 0x01;
         private const int MOD_CONTROL = 0x02;
         private const int MOD_SHIFT = 0x04;
@@ -115,5 +115,40 @@ namespace AoEDEAlarm {
                 base.WndProc(ref m);
             }
         }
+
+        public static string GetKeysString(Keys keys) {
+            StringBuilder sb = new StringBuilder();
+            //Keys k = 0;
+
+            if ((keys & Keys.Alt) == Keys.Alt) {
+                sb.Append("ALT");
+                //k |= Keys.Alt;
+            }
+
+            if ((keys & Keys.Control) == Keys.Control) {
+                if (sb.Length > 0) sb.Append(" + ");
+                sb.Append("CTRL");
+                //k |= Keys.Control;
+            }
+
+            if ((keys & Keys.Shift) == Keys.Shift) {
+                if (sb.Length > 0) sb.Append(" + ");
+                sb.Append("SHIFT");
+                //k |= Keys.Shift;
+            }
+
+            Keys k = keys & ~Keys.Control & ~Keys.Shift & ~Keys.Alt;
+
+            if (k != 0) {
+                if (sb.Length > 0) sb.Append(" + ");
+                sb.Append(k);
+                //k |= e.KeyCode;
+
+                //Keys k = x & ~Keys.Control & ~Keys.Shift & ~Keys.Alt;
+                //Keys k = e.KeyCode;
+            }
+            return sb.ToString();
+        }
+
     }
 }

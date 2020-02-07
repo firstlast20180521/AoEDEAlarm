@@ -272,6 +272,15 @@ namespace AoEDEAlarm {
         private void button3_Click(object sender, EventArgs e) {
             SaveData();
 
+            MessageBox.Show(text: "位置を保存しました。"
+                , caption: "画像位置設定"
+                , buttons: MessageBoxButtons.OK
+                , icon: MessageBoxIcon.Information
+                , defaultButton: MessageBoxDefaultButton.Button1
+                , options: MessageBoxOptions.DefaultDesktopOnly
+                );
+
+
         }
 
         private void SaveData() {
@@ -329,14 +338,6 @@ namespace AoEDEAlarm {
             GlobalValues.ApplicationSetting.NotWorking.Height = _ps.NotWorking.Height;
 
             TempClass<ApplicationSettingClass>.SaveXml(GlobalValues.ApplicationSetting, ConstValues.ApplicationSettingFileName);
-
-            MessageBox.Show(text: "位置を保存しました。"
-                , caption: "画像位置設定"
-                , buttons: MessageBoxButtons.OK
-                , icon: MessageBoxIcon.Information
-                , defaultButton: MessageBoxDefaultButton.Button1
-                , options: MessageBoxOptions.DefaultDesktopOnly
-                );
 
         }
 
