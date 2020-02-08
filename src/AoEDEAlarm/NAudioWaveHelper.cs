@@ -15,18 +15,17 @@ namespace AoEDEAlarm {
         public WaveFileReader Reader { get; set; }
 
         public NAudioWaveHelper(string file, float volume) {
-            Console.WriteLine($"--->{file}<---");
             FileName = file;
             Volume = volume;
             Reader = new NAudio.Wave.WaveFileReader(new FileStream(file, FileMode.Open,FileAccess.Read));
         }
 
-        public void Play() {
+        public void Play(int master_volume) {
             try {
                 Wave = new NAudio.Wave.WaveOut();
                 Reader.Position = 0;
                 Wave.Init(Reader);
-                Wave.Volume = Volume;
+                Wave.Volume = Volume * ((float)master_volume / (float)100);
                 Wave.Play();
 
             } catch (Exception ex) {

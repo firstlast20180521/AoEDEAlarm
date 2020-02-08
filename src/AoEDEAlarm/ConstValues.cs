@@ -38,15 +38,9 @@ namespace AoEDEAlarm {
 
             ApplicationSettingFileName = Path.Combine(executing_directory_name, @"application_setting.xml");
             SoundSettingFileName = Path.Combine(executing_directory_name, @"sound_setting.xml");
-            //SoundFileName_Housing = Path.Combine(SoundPath, @"Windows Balloon.wav");
-            //SoundFileName_JobNotAssigned = Path.Combine(SoundPath, @"chord.wav");
             HelpFileName = Path.Combine(DocumentPath, @"Help.htm");
             DebugBitmapFileName1 = Path.Combine(WorkDirectoryPath, @"xxx1.bmp");
             DebugBitmapFileName2 = Path.Combine(WorkDirectoryPath, @"xxx2.bmp");
-            //DebugBitmapFileName3 = Path.Combine(WorkDirectoryPath, @"xxx3.bmp");
-            //DebugBitmapFileName4 = Path.Combine(WorkDirectoryPath, @"xxx4.bmp");
-            //DebugBitmapFileName5 = Path.Combine(WorkDirectoryPath, @"xxx5.bmp");
-            //DebugBitmapFileName6 = Path.Combine(WorkDirectoryPath, @"xxx6.bmp");
 
         }
     }

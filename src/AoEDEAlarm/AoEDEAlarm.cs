@@ -22,13 +22,7 @@ using NAudio.Wave;
 namespace AoEDEAlarm {
     class AoEDEAlarm : IDisposable {
 
-        //System.Media.SoundPlayer _SoundPlayer_HouseLacking = new System.Media.SoundPlayer();
-        //System.Media.SoundPlayer _SoundPlayer_JobNotAssigned = new System.Media.SoundPlayer();
-
         public AoEDEAlarm() {
-            //_SoundPlayer_HouseLacking = new System.Media.SoundPlayer(AoedeStaticGlobal.SoundFileName_Housing);
-            //_SoundPlayer_JobNotAssigned = new System.Media.SoundPlayer(AoedeStaticGlobal.SoundFileName_JobNotAssigned);
-
         }
 
         public async Task<bool> Run(CancellationToken token) {
@@ -40,7 +34,7 @@ namespace AoEDEAlarm {
 
                 if (token.IsCancellationRequested) {
                     GlobalValues.Console.Invoke((MethodInvoker)delegate {
-                        GlobalValues.Console.Start("監視処理を中断しました。");
+                        GlobalValues.AddMessage("監視処理を中断しました。");
                     });
                     break;
                 }
@@ -57,6 +51,21 @@ namespace AoEDEAlarm {
                     //bmp.Save(AoedeStaticGlobal.DebugBitmapFileName1);
 
                     using (Mat mat = BitmapConverter.ToMat(bmp)) {
+
+                        //
+                        //プレイヤー
+                        //
+                        string[] playerNames;
+                        bool rtnPlayer = CheckPlayer(mat, out playerNames);
+                        if (rtnPlayer) {
+                            for (int i = 0; i < playerNames.Length; i++) {
+                                GlobalValues.Console.Invoke((MethodInvoker)delegate {
+                                    //GlobalValues.Console.Start($"--->{playerNames[i]}<---");
+                                    //GlobalValues.AddMessage($"--->{playerNames[i]}<---");
+                                });
+                            }
+                        }
+
                         //
                         //木
                         //
@@ -64,11 +73,11 @@ namespace AoEDEAlarm {
                         if (woodValue >= GlobalValues.SoundSetting.WoodStock.AlarmValue) {
                             if (!isAlarmed) {
                                 //NAudioWaveHelper.Play_Sound_x(GlobalValues.SoundSetting.WoodStock.FileName, GlobalValues.SoundSetting.WoodStock.Volume);
-                                GlobalValues2.AudioHelper_WoodStock.Play();
+                                GlobalValues2.AudioHelper_WoodStock.Play(GlobalValues.ApplicationSetting.MasterVolume);
                                 isAlarmed = true;
                             }
                             GlobalValues.Console.Invoke((MethodInvoker)delegate {
-                                GlobalValues.Console.Start($"木材が{woodValue}余っています。");
+                                GlobalValues.AddMessage($"木が{woodValue}余っています。");
                             });
                             //continue;
                         }
@@ -80,11 +89,11 @@ namespace AoEDEAlarm {
                         if (foodValue >= GlobalValues.SoundSetting.FoodStock.AlarmValue) {
                             if (!isAlarmed) {
                                 //NAudioWaveHelper.Play_Sound_x(GlobalValues.SoundSetting.FoodStock.FileName, GlobalValues.SoundSetting.FoodStock.Volume);
-                                GlobalValues2.AudioHelper_FoodStock.Play();
+                                GlobalValues2.AudioHelper_FoodStock.Play(GlobalValues.ApplicationSetting.MasterVolume);
                                 isAlarmed = true;
                             }
                             GlobalValues.Console.Invoke((MethodInvoker)delegate {
-                                GlobalValues.Console.Start($"食料が{foodValue}余っています。");
+                                GlobalValues.AddMessage($"食料が{foodValue}余っています。");
                             });
                             //continue;
                         }
@@ -96,11 +105,11 @@ namespace AoEDEAlarm {
                         if (goldValue >= GlobalValues.SoundSetting.GoldStock.AlarmValue) {
                             if (!isAlarmed) {
                                 //NAudioWaveHelper.Play_Sound_x(GlobalValues.SoundSetting.GoldStock.FileName, GlobalValues.SoundSetting.GoldStock.Volume);
-                                GlobalValues2.AudioHelper_GoldStock.Play();
+                                GlobalValues2.AudioHelper_GoldStock.Play(GlobalValues.ApplicationSetting.MasterVolume);
                                 isAlarmed = true;
                             }
                             GlobalValues.Console.Invoke((MethodInvoker)delegate {
-                                GlobalValues.Console.Start($"金が{goldValue}余っています。");
+                                GlobalValues.AddMessage($"金が{goldValue}余っています。");
                             });
                             //continue;
                         }
@@ -112,17 +121,17 @@ namespace AoEDEAlarm {
                         if (stoneValue >= GlobalValues.SoundSetting.StoneStock.AlarmValue) {
                             if (!isAlarmed) {
                                 //NAudioWaveHelper.Play_Sound_x(GlobalValues.SoundSetting.StoneStock.FileName, GlobalValues.SoundSetting.StoneStock.Volume);
-                                GlobalValues2.AudioHelper_StoneStock.Play();
+                                GlobalValues2.AudioHelper_StoneStock.Play(GlobalValues.ApplicationSetting.MasterVolume);
                                 isAlarmed = true;
                             }
                             GlobalValues.Console.Invoke((MethodInvoker)delegate {
-                                GlobalValues.Console.Start($"石が{stoneValue}余っています。");
+                                GlobalValues.AddMessage($"石が{stoneValue}余っています。");
                             });
                             //continue;
                         }
 
                         //
-                        //遊び農民
+                        //遊休農民
                         //
                         int numberNotWorking;
                         bool rtn2 = CheckNotWorking(mat, out numberNotWorking);
@@ -131,11 +140,11 @@ namespace AoEDEAlarm {
                                 //アラーム音を出す。
                                 if (!isAlarmed) {
                                     //NAudioWaveHelper.Play_Sound_x(GlobalValues.SoundSetting.NotWorking.FileName, GlobalValues.SoundSetting.NotWorking.Volume);
-                                    GlobalValues2.AudioHelper_NotWorking.Play();
+                                    GlobalValues2.AudioHelper_NotWorking.Play(GlobalValues.ApplicationSetting.MasterVolume);
                                     isAlarmed = true;
                                 }
                                 GlobalValues.Console.Invoke((MethodInvoker)delegate {
-                                    GlobalValues.Console.Start($"農民が{numberNotWorking}人遊んでいます。");
+                                    GlobalValues.AddMessage($"農民が{numberNotWorking}人遊んでいます。");
                                 });
                                 //continue;
                             }
@@ -151,11 +160,11 @@ namespace AoEDEAlarm {
                             if (popDenominator - popNumerator <= GlobalValues.SoundSetting.Housing.AlarmValue) {
                                 if (!isAlarmed) {
                                     //NAudioWaveHelper.Play_Sound_x(GlobalValues.SoundSetting.Housing.FileName, GlobalValues.SoundSetting.Housing.Volume);
-                                    GlobalValues2.AudioHelper_Housing.Play();
+                                    GlobalValues2.AudioHelper_Housing.Play(GlobalValues.ApplicationSetting.MasterVolume);
                                     isAlarmed = true;
                                 }
                                 GlobalValues.Console.Invoke((MethodInvoker)delegate {
-                                    GlobalValues.Console.Start($"家が不足しています。");
+                                    GlobalValues.AddMessage($"家が不足しています。");
                                 });
                                 //continue;
                             }
@@ -168,6 +177,38 @@ namespace AoEDEAlarm {
             }
 
             //}
+            return true;
+        }
+
+        private bool CheckPlayer(Mat mat, out string[] playerNames) {
+            //Cv2.ImRead("", ImreadModes.);
+            playerNames = new string[8];
+            for (int i = 0; i < playerNames.Length; i++) {
+                playerNames[i] = "";
+            }
+            try {
+                Point loc = new Point(GlobalValues.ApplicationSetting.Players.X, GlobalValues.ApplicationSetting.Players.Y);
+                Size sz = new Size(GlobalValues.ApplicationSetting.Players.Width, GlobalValues.ApplicationSetting.Players.Height);
+                using (Mat mat2 = mat.Clone(new OpenCvSharp.Rect(loc, sz))) {
+                    //Cv2.ImShow("mat_mask_white", mat2);
+                    //Cv2.WaitKey(10);
+                    //InputArray lower_white = InputArray.Create(new int[3] { 0, 0, 100 });
+                    //InputArray upper_white = InputArray.Create(new int[3] { 180, 45, 255 });
+                    //using (Mat mat_mask_white = mat2.InRange(lower_white, upper_white)) {
+                    //    Cv2.ImShow("mat_mask_white", mat_mask_white);
+                    //    Cv2.WaitKey(10);
+                    //}
+                    Scalar s_min = new Scalar(0, 0, 100);
+                    Scalar s_max = new Scalar(100, 100, 255);                    //The lower boundary is neither an array of the same size and same type as src, nor a scalar
+                    using (Mat mask_image = mat2.InRange(s_min, s_max)) {
+                        //Cv2.ImShow("mask_image", mask_image);
+                        //Cv2.WaitKey(10);
+                    }
+                }
+
+            } catch (Exception ex) {
+                Console.WriteLine($"{ex.Message}");
+            }
             return true;
         }
 

@@ -136,8 +136,8 @@ namespace AoEDEAlarm {
             GlobalValues.ApplicationSetting.Hotkey_Stop = (int)KeysArr[1];
             GlobalValues.ApplicationSetting.Hotkey_Customise = (int)KeysArr[2];
 
-            TempClass<ApplicationSettingClass>.SaveXml(GlobalValues.ApplicationSetting, ConstValues.ApplicationSettingFileName);
-            TempClass<SoundSettingClass>.SaveXml(GlobalValues.SoundSetting, ConstValues.SoundSettingFileName);
+            XmlUtilityClass<ApplicationSettingClass>.SaveXml(GlobalValues.ApplicationSetting, ConstValues.ApplicationSettingFileName);
+            XmlUtilityClass<SoundSettingClass>.SaveXml(GlobalValues.SoundSetting, ConstValues.SoundSettingFileName);
 
             MessageBox.Show(text: "位置を保存しました。"
                 , caption: "画像位置設定"

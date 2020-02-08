@@ -18,15 +18,12 @@ namespace AoEDEAlarm {
         [DllImport("user32")]
         static extern int UnregisterHotKey(IntPtr hwnd, int id);
 
-        //[DllImport("kernel32", EntryPoint = "GlobalAddAtomA", CharSet = CharSet.Unicode)]
         [DllImport("kernel32", EntryPoint = "GlobalAddAtomA")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA2101:Specify marshaling for P/Invoke string arguments", Justification = "<•Û—¯’†>")]
         static extern short GlobalAddAtom(string lpString);
 
         [DllImport("kernel32")]
         static extern short GlobalDeleteAtom(short nAtom);
-
-        //CancellationTokenSource tokenSource = null;
 
         private HotkeyForm hWnd = null;
 
@@ -118,23 +115,19 @@ namespace AoEDEAlarm {
 
         public static string GetKeysString(Keys keys) {
             StringBuilder sb = new StringBuilder();
-            //Keys k = 0;
 
             if ((keys & Keys.Alt) == Keys.Alt) {
                 sb.Append("ALT");
-                //k |= Keys.Alt;
             }
 
             if ((keys & Keys.Control) == Keys.Control) {
                 if (sb.Length > 0) sb.Append(" + ");
                 sb.Append("CTRL");
-                //k |= Keys.Control;
             }
 
             if ((keys & Keys.Shift) == Keys.Shift) {
                 if (sb.Length > 0) sb.Append(" + ");
                 sb.Append("SHIFT");
-                //k |= Keys.Shift;
             }
 
             Keys k = keys & ~Keys.Control & ~Keys.Shift & ~Keys.Alt;
@@ -142,10 +135,6 @@ namespace AoEDEAlarm {
             if (k != 0) {
                 if (sb.Length > 0) sb.Append(" + ");
                 sb.Append(k);
-                //k |= e.KeyCode;
-
-                //Keys k = x & ~Keys.Control & ~Keys.Shift & ~Keys.Alt;
-                //Keys k = e.KeyCode;
             }
             return sb.ToString();
         }

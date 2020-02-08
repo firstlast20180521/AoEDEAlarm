@@ -70,6 +70,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AoEDEAlarm.cs" />
+    <Compile Include="BackDataClass.cs" />
     <Compile Include="ConstValues.cs" />
     <Compile Include="GlobalValues.cs" />
     <Compile Include="GlobalValues2.cs" />
@@ -87,7 +88,13 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="SoundSettingClass.cs" />
-    <Compile Include="TempClass.cs" />
+    <Compile Include="VolumeAdjustForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VolumeAdjustForm.Designer.cs">
+      <DependentUpon>VolumeAdjustForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="XmlUtilityClass.cs" />
     <Compile Include="TransparentForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -148,6 +155,9 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VolumeAdjustForm.resx">
+      <DependentUpon>VolumeAdjustForm.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -8,6 +8,7 @@ using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -27,71 +28,154 @@ namespace AoEDEAlarm {
         private const int HWND_NOTOPMOST = -2;
 
         private Point mousePoint;
+        private ContextMenu _cm = new ContextMenu();
+        private MenuItem _mi_AdjustVolume = new MenuItem();
+        private MenuItem _mi_StartMonitoring = new MenuItem();
+        private MenuItem _mi_StopMonitoring = new MenuItem();
+        private MenuItem _mi_ShowPositionSettingForm = new MenuItem();
+        private MenuItem _mi_ExitProgram = new MenuItem();
 
-        private class BackData {
-            internal DateTime TimeStump { get; set; }
-            internal string Message { get; set; }
-        }
-        private List<BackData> _BackData;
+        //private class BackData {
+        //    internal DateTime TimeStump { get; set; }
+        //    internal string Message { get; set; }
+        //}
+        //private List<BackData> _BackData;
 
         public TransparentForm() {
             InitializeComponent();
-            _BackData = new List<BackData>();
+            //_BackData = new List<BackData>();
         }
 
-        public void Start(string message) {
+        private void Msg_Load(object sender, EventArgs e) {
+
+            _mi_AdjustVolume.Text = "音量調節";
+            _mi_AdjustVolume.Click += Mi_Click;
+            _cm.MenuItems.Add(_mi_AdjustVolume);
+
+            _mi_StartMonitoring.Text = "監視開始";
+            _mi_StartMonitoring.Click += _mi_StartMonitoring_Click;
+            _cm.MenuItems.Add(_mi_StartMonitoring);
+
+            _mi_StopMonitoring.Text = "監視中断";
+            _mi_StopMonitoring.Click += _mi_StopMonitoring_Click;
+            _cm.MenuItems.Add(_mi_StopMonitoring);
+
+            _mi_ShowPositionSettingForm.Text = "位置設定";
+            _mi_ShowPositionSettingForm.Click += _mi_ShowPositionSettingForm_Click; 
+            _cm.MenuItems.Add(_mi_ShowPositionSettingForm);
+
+            _mi_ExitProgram.Text = "アプリケーション終了";
+            _mi_ExitProgram.Click += _mi_ExitProgram_Click;
+            _cm.MenuItems.Add(_mi_ExitProgram);
+
+            //画面移動用
+            textBox1.MouseDown += new MouseEventHandler(Msg_MouseDown);
+            textBox1.MouseMove += new MouseEventHandler(Msg_MouseMove);
+
+            //最前面
+            SetWindowPos(this.Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+            //SetWindowPos(this.Handle, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_SHOWWINDOW | SWP_NOMOVE | SWP_NOSIZE);
+
+            //ウィンドウの位置を設定ファイルより復元
+            this.Location = Properties.Settings.Default.FormPosition;
+
+            //初期メッセージ
+            GlobalValues.AddMessage($"監視開始：{HotKey.GetKeysString((Keys)GlobalValues.ApplicationSetting.Hotkey_Run)}");
+            GlobalValues.AddMessage($"監視中断：{HotKey.GetKeysString((Keys)GlobalValues.ApplicationSetting.Hotkey_Stop)}");
+            GlobalValues.AddMessage($"位置設定：{HotKey.GetKeysString((Keys)GlobalValues.ApplicationSetting.Hotkey_Customise)}");
+
+            //モニタリング開始
+            Start();
+
+            //_BackData.Add(new BackData() { TimeStump = DateTime.Now, Message = $"監視開始：{HotKey.GetKeysString((Keys)GlobalValues.ApplicationSetting.Hotkey_Run)}" });
+            //_BackData.Add(new BackData() { TimeStump = DateTime.Now, Message = $"監視中断：{HotKey.GetKeysString((Keys)GlobalValues.ApplicationSetting.Hotkey_Stop)}" });
+            //_BackData.Add(new BackData() { TimeStump = DateTime.Now, Message = $"位置設定：{HotKey.GetKeysString((Keys)GlobalValues.ApplicationSetting.Hotkey_Customise)}" });
+
+            //テキストボックスに反映する。
+            //StringBuilder sb = new StringBuilder();
+            //foreach (BackData x in _BackData) {
+            //    sb.AppendLine(x.Message);
+            //}
+            //this.textBox1.Text = sb.ToString();
+        }
+
+        private void _mi_ExitProgram_Click(object sender, EventArgs e) {
+            this.Close();
+        }
+
+        private void _mi_ShowPositionSettingForm_Click(object sender, EventArgs e) {
+            Program.ShowPositionSettingForm();
+        }
+
+        private void _mi_StartMonitoring_Click(object sender, EventArgs e) {
+            Program.StartMonitoring();
+        }
+
+        private void _mi_StopMonitoring_Click(object sender, EventArgs e) {
+            Program.StopMonitoring();
+        }
+
+        private void Mi_Click(object sender, EventArgs e) {
+            VolumeAdjustForm f = new VolumeAdjustForm();
+            f.ShowDialog();
+        }
+
+        //public void SetMessage(string message) {
+        //    //末尾にメッセージを追加する。
+        //    _BackData.Add(new BackData() { TimeStump = DateTime.Now, Message = message });
+        //}
+
+        //public void Start(string message) {
+        public void Start() {
+            CancellationTokenSource tokenSource = new CancellationTokenSource();
+            CancellationToken token = tokenSource.Token;
+
             //末尾にメッセージを追加する。
-            _BackData.Add(new BackData() {TimeStump= DateTime.Now, Message= message });
+            //_BackData.Add(new BackData() {TimeStump= DateTime.Now, Message= message });
 
             this.Opacity = 0.9;
             Task.Run(async () => {
-                while (this.Opacity > 0.15) {
+                while (!token.IsCancellationRequested) {
+                    //Console.WriteLine("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
                     this.Invoke((MethodInvoker)delegate {
-                        this.Opacity -= 0.05;
+                        //古いメッセージは削除する。
+                        GlobalValues.BackDataList.RemoveAll(s => DateTime.Now - s.TimeStump > new TimeSpan(0, 0, 10));
 
-                        //3秒経過したメッセージは削除する。
-                        _BackData.RemoveAll(s => DateTime.Now - s.TimeStump > new TimeSpan(0, 0, 3));
-
-                        //テキストボックスに反映する。
+                        //Listオブジェクトのメッセージをテキストボックスに反映する。
                         StringBuilder sb = new StringBuilder();
-                        foreach (BackData x in _BackData) {
+                        foreach (BackDataClass x in GlobalValues.BackDataList) {
                             sb.AppendLine(x.Message);
+                        }
+                        if (sb.Length > 0) {
+                            //不透明度
+                            this.Opacity = 0.90;
                         }
                         this.textBox1.Text = sb.ToString();
                     });
 
-                    //0.3秒待機
+                    //数秒間待機する。
                     await Task.Delay(300);
+
+                    this.Invoke((MethodInvoker)delegate {
+                        if (this.Opacity > 0.25) {
+                            //不透明度を下げる。
+                            this.Opacity -= 0.05;
+                        }
+                    });
+
                 }
-            });
+            }, token);
 
-        }
-
-        private void Msg_Load(object sender, EventArgs e) {
-            textBox1.MouseDown += new MouseEventHandler(Msg_MouseDown);
-            textBox1.MouseMove += new MouseEventHandler(Msg_MouseMove);
-
-            SetWindowPos(this.Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
-            //SetWindowPos(this.Handle, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_SHOWWINDOW | SWP_NOMOVE | SWP_NOSIZE);
-
-            _BackData.Add(new BackData() { TimeStump = DateTime.Now, Message = $"監視開始：{HotKey.GetKeysString((Keys)GlobalValues.ApplicationSetting.Hotkey_Run)}" });
-            _BackData.Add(new BackData() { TimeStump = DateTime.Now, Message = $"監視中断：{HotKey.GetKeysString((Keys)GlobalValues.ApplicationSetting.Hotkey_Stop)}" });
-            _BackData.Add(new BackData() { TimeStump = DateTime.Now, Message = $"位置設定：{HotKey.GetKeysString((Keys)GlobalValues.ApplicationSetting.Hotkey_Customise)}" });
-            //テキストボックスに反映する。
-            StringBuilder sb = new StringBuilder();
-            foreach (BackData x in _BackData) {
-                sb.AppendLine(x.Message);
-            }
-            this.textBox1.Text = sb.ToString();
-
-
-            this.Location = Properties.Settings.Default.FormPosition;
         }
 
         private void Msg_MouseDown(object sender, MouseEventArgs e) {
             if ((e.Button & MouseButtons.Left) == MouseButtons.Left) {
                 //位置を記憶する
                 mousePoint = new Point(e.X, e.Y);
+            }
+
+            if (e.Button == MouseButtons.Right) {
+                _cm.Show(this, new Point(this.Width/2, this.Height/2));
             }
 
         }
@@ -147,14 +231,14 @@ namespace AoEDEAlarm {
                 , options: MessageBoxOptions.DefaultDesktopOnly
                 );
 
-            if (rtn==DialogResult.Cancel) {
+            if (rtn == DialogResult.Cancel) {
                 e.Cancel = true;
                 return;
             }
 
 
             try {
-                GlobalValues.tokenSource?.Cancel();
+                GlobalValues.AlarmTokenSource?.Cancel();
             } catch (Exception) {
             }
 
@@ -162,17 +246,19 @@ namespace AoEDEAlarm {
 
         }
 
-        //private void SetTopMost() {
-        //    const int HWND_TOPMOST = -1;
-        //    const uint SWP_NOSIZE = 0x0001;
-        //    const uint SWP_NOMOVE = 0x0002;
-        //    const uint SWP_NOACTIVATE = 0x0010;
-        //    const uint SWP_SHOWWINDOW = 0x0040;
-        //    const uint SWP_NOSENDCHANGING = 0x0400;
-        //    // SetWindowPosはどこかでDllImportする
-        //    SetWindowPos(this.Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSENDCHANGING | SWP_NOSIZE | SWP_SHOWWINDOW);
-        //}
+        private void TransparentForm_Activated(object sender, EventArgs e) {
+            //アラーム画面にフォーカスがあることに気が付かずに、ゲーム画面の操作を行わなないようにするための対策。
+            this.FormBorderStyle = FormBorderStyle.Fixed3D;
 
+        }
 
+        private void TransparentForm_Deactivate(object sender, EventArgs e) {
+            //アラーム画面にフォーカスがあることに気が付かずに、ゲーム画面の操作を行わなないようにするための対策。
+            this.FormBorderStyle = FormBorderStyle.None;
+
+        }
+
+        private void TransparentForm_Click(object sender, EventArgs e) {
+        }
     }
 }

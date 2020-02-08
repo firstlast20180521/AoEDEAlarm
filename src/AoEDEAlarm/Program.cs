@@ -48,21 +48,18 @@ namespace AoEDEAlarm {
                     Application.EnableVisualStyles();
                     Application.SetCompatibleTextRenderingDefault(false);
 
-                    //_g = new AoedeGlobal();
-                    GlobalValues.ApplicationSetting = TempClass<ApplicationSettingClass>.LoadXml(ConstValues.ApplicationSettingFileName);
-                    GlobalValues.SoundSetting = TempClass<SoundSettingClass>.LoadXml(ConstValues.SoundSettingFileName);
+                    GlobalValues.ApplicationSetting = XmlUtilityClass<ApplicationSettingClass>.LoadXml(ConstValues.ApplicationSettingFileName);
+                    GlobalValues.SoundSetting = XmlUtilityClass<SoundSettingClass>.LoadXml(ConstValues.SoundSettingFileName);
 
                     StartHotkeys();
                     NotifyIcon ni = SetNotifyIcon();
 
                     GlobalValues.Console.Show();
-                    //GlobalValues.Console.Start("監視処理を開始しました。");
-
                     System.Windows.Forms.Application.Run();
 
                     ni.Dispose();
-                    TempClass<ApplicationSettingClass>.SaveXml(GlobalValues.ApplicationSetting, ConstValues.ApplicationSettingFileName);
-                    TempClass<SoundSettingClass>.SaveXml(GlobalValues.SoundSetting, ConstValues.SoundSettingFileName);
+                    XmlUtilityClass<ApplicationSettingClass>.SaveXml(GlobalValues.ApplicationSetting, ConstValues.ApplicationSettingFileName);
+                    XmlUtilityClass<SoundSettingClass>.SaveXml(GlobalValues.SoundSetting, ConstValues.SoundSettingFileName);
 
                 } catch (Exception ex) {
                     // アプリケーション例外処理
@@ -81,15 +78,9 @@ namespace AoEDEAlarm {
 
         }
 
-        private static void Aaa() {
-
-
-        }
-
         private static NotifyIcon SetNotifyIcon() {
             NotifyIcon ni;
 
-            //NotifyIcon ni = new NotifyIcon();
             ni = new NotifyIcon();
             ni.Icon = Properties.Resources.Leaf32;
             ni.Text = "AoEDEAlarm";
@@ -174,7 +165,10 @@ namespace AoEDEAlarm {
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private static void Hk_Run_HotkeyEvent(object sender, EventArgs e) {
+            StartMonitoring();
+        }
 
+        public static void StartMonitoring() {
             if (GlobalValues.IsRunning) {
                 MessageBox.Show(text: $"既に監視中です。"
                     , caption: "AoEDEAlarm"
@@ -215,8 +209,8 @@ namespace AoEDEAlarm {
 
             //if (Win32Api.GetActiveWindowProductName() != "AoEDE") return;
 
-            GlobalValues.tokenSource = new CancellationTokenSource();
-            CancellationToken token = GlobalValues.tokenSource.Token;
+            GlobalValues.AlarmTokenSource = new CancellationTokenSource();
+            CancellationToken token = GlobalValues.AlarmTokenSource.Token;
 
             using (AoEDEAlarm a = new AoEDEAlarm()) {
 
@@ -236,7 +230,7 @@ namespace AoEDEAlarm {
                 }, token);
 
                 //最前面
-                GlobalValues.Console.Start("監視処理を開始しました。");
+                GlobalValues.AddMessage("監視処理を開始しました。");
                 //MessageBox.Show(text: $"アラーム処理を開始しました。"
                 //    , caption: "AoEDEAlarm"
                 //    , buttons: MessageBoxButtons.OK
@@ -246,7 +240,6 @@ namespace AoEDEAlarm {
                 //    );
 
             }
-
         }
 
         private static bool Check() {
@@ -261,11 +254,13 @@ namespace AoEDEAlarm {
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private static void Hk_Stop_HotkeyEvent(object sender, EventArgs e) {
-            //if (Win32Api.GetActiveWindowProductName() != "AoEDEAlarm") return;
-            GlobalValues.tokenSource?.Cancel();
-            GlobalValues.Console.Start("監視処理を中断します。");
+            StopMonitoring();
 
+        }
 
+        public static void StopMonitoring() {
+            GlobalValues.AlarmTokenSource?.Cancel();
+            GlobalValues.AddMessage("監視処理を中断します。");
         }
 
         /// <summary>
@@ -274,7 +269,10 @@ namespace AoEDEAlarm {
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private static void Hk_Setting_HotkeyEvent(object sender, EventArgs e) {
+            ShowPositionSettingForm();
+        }
 
+        public static void ShowPositionSettingForm() {
             if (GlobalValues.IsRunning) {
                 MessageBox.Show(text: $"監視処理を終了する必要があります。"
                     , caption: "AoEDEAlarm"
@@ -292,13 +290,12 @@ namespace AoEDEAlarm {
             f.TopMost = true;
             f.Show();
 
-
         }
 
         private static void Item1_Click(object sender, EventArgs e) {
 
             try {
-                GlobalValues.tokenSource?.Cancel();
+                GlobalValues.AlarmTokenSource?.Cancel();
             } catch (Exception) {
             }
 

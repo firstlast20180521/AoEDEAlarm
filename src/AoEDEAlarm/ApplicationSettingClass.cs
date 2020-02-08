@@ -1,16 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
 
 namespace AoEDEAlarm {
     public class ApplicationSettingClass {
         public int CheckInterval { get; set; }
+        public int MasterVolume { get; set; }
 
         public int Hotkey_Run { get; set; }
         public int Hotkey_Stop { get; set; }
@@ -22,6 +15,8 @@ namespace AoEDEAlarm {
         public Rectangle Stone { get; set; }
         public Rectangle Housing { get; set; }
         public Rectangle NotWorking { get; set; }
+        public Rectangle Players { get; set; }
+        public Rectangle MiniMap { get; set; }
 
         public class Rectangle {
             public int X { get; set; }
@@ -32,6 +27,7 @@ namespace AoEDEAlarm {
 
         public ApplicationSettingClass() {
             CheckInterval = 3000;
+            MasterVolume = 100;
             Hotkey_Run = (int)(Keys.R | Keys.Control | Keys.Shift);
             Hotkey_Stop = (int)(Keys.S | Keys.Control | Keys.Shift);
             Hotkey_Customise = (int)(Keys.C | Keys.Control | Keys.Shift);
@@ -41,6 +37,8 @@ namespace AoEDEAlarm {
             Stone = new ApplicationSettingClass.Rectangle { X = 0, Y = 0, Width = 0, Height = 0, };
             Housing = new ApplicationSettingClass.Rectangle { X = 0, Y = 0, Width = 0, Height = 0, };
             NotWorking = new ApplicationSettingClass.Rectangle { X = 0, Y = 0, Width = 0, Height = 0, };
+            Players = new ApplicationSettingClass.Rectangle { X = 0, Y = 0, Width = 0, Height = 0, };
+            MiniMap = new ApplicationSettingClass.Rectangle { X = 0, Y = 0, Width = 0, Height = 0, };
 
         }
 

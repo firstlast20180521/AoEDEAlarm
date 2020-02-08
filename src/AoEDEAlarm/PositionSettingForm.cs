@@ -20,17 +20,19 @@ namespace AoEDEAlarm {
             InitializeComponent();
         }
 
-        private enum ResourceKind {
+        private enum PositionKind {
             Wood,
             Food,
             Gold,
             Stone,
-            Population,
-            IdlePopulation,
+            Housing,
+            NotWorking,
+            Players,
+            MiniMap,
         }
 
-        private RadioButton[] radioButtons = new RadioButton[Enum.GetNames(typeof(ResourceKind)).Length];
-        private PictureBox[] pictureBoxes = new PictureBox[Enum.GetNames(typeof(ResourceKind)).Length];
+        private RadioButton[] radioButtons = new RadioButton[Enum.GetNames(typeof(PositionKind)).Length];
+        private PictureBox[] pictureBoxes = new PictureBox[Enum.GetNames(typeof(PositionKind)).Length];
 
         ApplicationSettingClass _ps = new ApplicationSettingClass {
             Wood = new ApplicationSettingClass.Rectangle {
@@ -75,6 +77,20 @@ namespace AoEDEAlarm {
                 Height = GlobalValues.ApplicationSetting.NotWorking.Height,
             },
 
+            Players = new ApplicationSettingClass.Rectangle {
+                X = GlobalValues.ApplicationSetting.Players.X,
+                Y = GlobalValues.ApplicationSetting.Players.Y,
+                Width = GlobalValues.ApplicationSetting.Players.Width,
+                Height = GlobalValues.ApplicationSetting.Players.Height,
+            },
+
+            MiniMap = new ApplicationSettingClass.Rectangle {
+                X = GlobalValues.ApplicationSetting.MiniMap.X,
+                Y = GlobalValues.ApplicationSetting.MiniMap.Y,
+                Width = GlobalValues.ApplicationSetting.MiniMap.Width,
+                Height = GlobalValues.ApplicationSetting.MiniMap.Height,
+            },
+
         };
 
 
@@ -86,8 +102,10 @@ namespace AoEDEAlarm {
             radioButtons[1] = this.rdoFood;
             radioButtons[2] = this.rdoGold;
             radioButtons[3] = this.rdoStone;
-            radioButtons[4] = this.rdoPopulation;
-            radioButtons[5] = this.rdoIdlePopulation;
+            radioButtons[4] = this.rdoHousing;
+            radioButtons[5] = this.rdoNotWorking;
+            radioButtons[6] = this.rdoPlayers;
+            radioButtons[7] = this.rdoMiniMap;
 
             radioButtons[0].Focus();
 
@@ -100,8 +118,10 @@ namespace AoEDEAlarm {
             pictureBoxes[1] = this.pctFood;
             pictureBoxes[2] = this.pctGold;
             pictureBoxes[3] = this.pctStone;
-            pictureBoxes[4] = this.pctPopulation;
-            pictureBoxes[5] = this.pctIdlePopulation;
+            pictureBoxes[4] = this.pctHousing;
+            pictureBoxes[5] = this.pctNotWorking;
+            pictureBoxes[6] = this.pctPlayers;
+            pictureBoxes[7] = this.pctMiniMap;
 
             //フルスクリーン矩形を作成
             Rectangle rect = Screen.PrimaryScreen.Bounds;
@@ -124,8 +144,10 @@ namespace AoEDEAlarm {
                 DrawPicture(pctCanvas, _ps.Food.X, _ps.Food.Y, _ps.Food.Width, _ps.Food.Height, pctFood);
                 DrawPicture(pctCanvas, _ps.Gold.X, _ps.Gold.Y, _ps.Gold.Width, _ps.Gold.Height, pctGold);
                 DrawPicture(pctCanvas, _ps.Stone.X, _ps.Stone.Y, _ps.Stone.Width, _ps.Stone.Height, pctStone);
-                DrawPicture(pctCanvas, _ps.Housing.X, _ps.Housing.Y, _ps.Housing.Width, _ps.Housing.Height, pctPopulation);
-                DrawPicture(pctCanvas, _ps.NotWorking.X, _ps.NotWorking.Y, _ps.NotWorking.Width, _ps.NotWorking.Height, pctIdlePopulation);
+                DrawPicture(pctCanvas, _ps.Housing.X, _ps.Housing.Y, _ps.Housing.Width, _ps.Housing.Height, pctHousing);
+                DrawPicture(pctCanvas, _ps.NotWorking.X, _ps.NotWorking.Y, _ps.NotWorking.Width, _ps.NotWorking.Height, pctNotWorking);
+                DrawPicture(pctCanvas, _ps.Players.X, _ps.Players.Y, _ps.Players.Width, _ps.Players.Height, pctPlayers);
+                DrawPicture(pctCanvas, _ps.MiniMap.X, _ps.MiniMap.Y, _ps.MiniMap.Width, _ps.MiniMap.Height, pctMiniMap);
             }
         }
 
@@ -206,23 +228,43 @@ namespace AoEDEAlarm {
                     return;
                 }
 
-                if (rdoPopulation.Checked) {
+                if (rdoHousing.Checked) {
                     _ps.Housing.X = sPos.X;
                     _ps.Housing.Y = sPos.Y;
                     _ps.Housing.Width = ePos.X - sPos.X;
                     _ps.Housing.Height = ePos.Y - sPos.Y;
 
-                    DrawPicture(pctCanvas, sPos.X, sPos.Y, ePos.X - sPos.X, ePos.Y - sPos.Y, pctPopulation);
+                    DrawPicture(pctCanvas, sPos.X, sPos.Y, ePos.X - sPos.X, ePos.Y - sPos.Y, pctHousing);
                     return;
                 }
 
-                if (rdoIdlePopulation.Checked) {
+                if (rdoNotWorking.Checked) {
                     _ps.NotWorking.X = sPos.X;
                     _ps.NotWorking.Y = sPos.Y;
                     _ps.NotWorking.Width = ePos.X - sPos.X;
                     _ps.NotWorking.Height = ePos.Y - sPos.Y;
 
-                    DrawPicture(pctCanvas, sPos.X, sPos.Y, ePos.X - sPos.X, ePos.Y - sPos.Y, pctIdlePopulation);
+                    DrawPicture(pctCanvas, sPos.X, sPos.Y, ePos.X - sPos.X, ePos.Y - sPos.Y, pctNotWorking);
+                    return;
+                }
+
+                if (rdoPlayers.Checked) {
+                    _ps.Players.X = sPos.X;
+                    _ps.Players.Y = sPos.Y;
+                    _ps.Players.Width = ePos.X - sPos.X;
+                    _ps.Players.Height = ePos.Y - sPos.Y;
+
+                    DrawPicture(pctCanvas, sPos.X, sPos.Y, ePos.X - sPos.X, ePos.Y - sPos.Y, pctPlayers);
+                    return;
+                }
+
+                if (rdoMiniMap.Checked) {
+                    _ps.MiniMap.X = sPos.X;
+                    _ps.MiniMap.Y = sPos.Y;
+                    _ps.MiniMap.Width = ePos.X - sPos.X;
+                    _ps.MiniMap.Height = ePos.Y - sPos.Y;
+
+                    DrawPicture(pctCanvas, sPos.X, sPos.Y, ePos.X - sPos.X, ePos.Y - sPos.Y, pctMiniMap);
                     return;
                 }
 
@@ -245,7 +287,7 @@ namespace AoEDEAlarm {
             Graphics g2 = Graphics.FromImage(pictureBox2.Image);
 
             g2.DrawImage(bmp, 0, 0, rect, GraphicsUnit.Pixel);
-            
+
             g2.Dispose();
 
             bmp.Dispose();
@@ -337,45 +379,71 @@ namespace AoEDEAlarm {
             GlobalValues.ApplicationSetting.NotWorking.Width = _ps.NotWorking.Width;
             GlobalValues.ApplicationSetting.NotWorking.Height = _ps.NotWorking.Height;
 
-            TempClass<ApplicationSettingClass>.SaveXml(GlobalValues.ApplicationSetting, ConstValues.ApplicationSettingFileName);
+            GlobalValues.ApplicationSetting.Players.X = _ps.Players.X;
+            GlobalValues.ApplicationSetting.Players.Y = _ps.Players.Y;
+            GlobalValues.ApplicationSetting.Players.Width = _ps.Players.Width;
+            GlobalValues.ApplicationSetting.Players.Height = _ps.Players.Height;
+
+            GlobalValues.ApplicationSetting.MiniMap.X = _ps.MiniMap.X;
+            GlobalValues.ApplicationSetting.MiniMap.Y = _ps.MiniMap.Y;
+            GlobalValues.ApplicationSetting.MiniMap.Width = _ps.MiniMap.Width;
+            GlobalValues.ApplicationSetting.MiniMap.Height = _ps.MiniMap.Height;
+
+            XmlUtilityClass<ApplicationSettingClass>.SaveXml(GlobalValues.ApplicationSetting, ConstValues.ApplicationSettingFileName);
 
         }
 
         private void rdoX_CheckedChanged(object sender, EventArgs e) {
+            
+            DrawWholePictures();
 
+
+        }
+
+        private void DrawWholePictures() {
             pctCanvas.Refresh();  //最後の四角形を削除
             Graphics g = pctCanvas.CreateGraphics();
             Pen bpen = new Pen(Color.Red, 1);
             bpen.DashStyle = DashStyle.Solid;
 
             //範囲確定の四角形を描く
-            if (radioButtons[(int)ResourceKind.Wood].Checked) {
+            if (radioButtons[(int)PositionKind.Wood].Checked) {
                 g.DrawRectangle(bpen, _ps.Wood.X, _ps.Wood.Y, _ps.Wood.Width, _ps.Wood.Height);
                 return;
             }
 
-            if (radioButtons[(int)ResourceKind.Food].Checked) {
+            if (radioButtons[(int)PositionKind.Food].Checked) {
                 g.DrawRectangle(bpen, _ps.Food.X, _ps.Food.Y, _ps.Food.Width, _ps.Food.Height);
                 return;
             }
 
-            if (radioButtons[(int)ResourceKind.Gold].Checked) {
+            if (radioButtons[(int)PositionKind.Gold].Checked) {
                 g.DrawRectangle(bpen, _ps.Gold.X, _ps.Gold.Y, _ps.Gold.Width, _ps.Gold.Height);
                 return;
             }
 
-            if (radioButtons[(int)ResourceKind.Stone].Checked) {
+            if (radioButtons[(int)PositionKind.Stone].Checked) {
                 g.DrawRectangle(bpen, _ps.Stone.X, _ps.Stone.Y, _ps.Stone.Width, _ps.Stone.Height);
                 return;
             }
 
-            if (radioButtons[(int)ResourceKind.Population].Checked) {
+            if (radioButtons[(int)PositionKind.Housing].Checked) {
                 g.DrawRectangle(bpen, _ps.Housing.X, _ps.Housing.Y, _ps.Housing.Width, _ps.Housing.Height);
                 return;
             }
 
-            if (radioButtons[(int)ResourceKind.IdlePopulation].Checked) {
+            if (radioButtons[(int)PositionKind.NotWorking].Checked) {
                 g.DrawRectangle(bpen, _ps.NotWorking.X, _ps.NotWorking.Y, _ps.NotWorking.Width, _ps.NotWorking.Height);
+                return;
+            }
+
+            if (radioButtons[(int)PositionKind.Players].Checked) {
+                g.DrawRectangle(bpen, _ps.Players.X, _ps.Players.Y, _ps.Players.Width, _ps.Players.Height);
+                return;
+            }
+
+            if (radioButtons[(int)PositionKind.MiniMap].Checked) {
+                g.DrawRectangle(bpen, _ps.MiniMap.X, _ps.MiniMap.Y, _ps.MiniMap.Width, _ps.MiniMap.Height);
                 return;
             }
 
@@ -383,5 +451,17 @@ namespace AoEDEAlarm {
 
         }
 
+        private void PositionSettingForm_Paint(object sender, PaintEventArgs e) {
+
+        }
+
+        private void pctCanvas_Paint(object sender, PaintEventArgs e) {
+            //DrawWholePictures();
+
+        }
+
+        private void pctCanvas_Resize(object sender, EventArgs e) {
+
+        }
     }
 }
