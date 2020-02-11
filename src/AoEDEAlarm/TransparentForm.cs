@@ -139,11 +139,11 @@ namespace AoEDEAlarm {
                     //Console.WriteLine("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
                     this.Invoke((MethodInvoker)delegate {
                         //古いメッセージは削除する。
-                        GlobalValues.BackDataList.RemoveAll(s => DateTime.Now - s.TimeStump > new TimeSpan(0, 0, 10));
+                        GlobalValues.AlarmMessageList.RemoveAll(s => DateTime.Now - s.TimeStump > new TimeSpan(0, 0, 10));
 
                         //Listオブジェクトのメッセージをテキストボックスに反映する。
                         StringBuilder sb = new StringBuilder();
-                        foreach (BackDataClass x in GlobalValues.BackDataList) {
+                        foreach (AlarmMessageClass x in GlobalValues.AlarmMessageList) {
                             sb.AppendLine(x.Message);
                         }
                         if (sb.Length > 0) {

@@ -26,7 +26,7 @@ namespace AoEDEAlarm {
         }
 
         public ApplicationSettingClass() {
-            CheckInterval = 3000;
+            CheckInterval = 5000;
             MasterVolume = 100;
             Hotkey_Run = (int)(Keys.R | Keys.Control | Keys.Shift);
             Hotkey_Stop = (int)(Keys.S | Keys.Control | Keys.Shift);

@@ -70,7 +70,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AoEDEAlarm.cs" />
-    <Compile Include="BackDataClass.cs" />
+    <Compile Include="AlarmMessageClass.cs" />
     <Compile Include="ConstValues.cs" />
     <Compile Include="GlobalValues.cs" />
     <Compile Include="GlobalValues2.cs" />
@@ -182,67 +182,70 @@
     <Content Include="doc\Help.htm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="image\0.png">
+    <Content Include="image\NotWorking\0.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="image\1.png">
+    <Content Include="image\NotWorking\1.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="image\10.png">
+    <Content Include="image\NotWorking\10.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="image\11.png">
+    <Content Include="image\NotWorking\11.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="image\12.png">
+    <Content Include="image\NotWorking\12.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="image\13.png">
+    <Content Include="image\NotWorking\13.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="image\14.png">
+    <Content Include="image\NotWorking\14.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="image\15.png">
+    <Content Include="image\NotWorking\15.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="image\16.png">
+    <Content Include="image\NotWorking\16.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="image\17.png">
+    <Content Include="image\NotWorking\17.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="image\18.png">
+    <Content Include="image\NotWorking\18.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="image\19.png">
+    <Content Include="image\NotWorking\19.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="image\2.png">
+    <Content Include="image\NotWorking\2.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="image\20.png">
+    <Content Include="image\NotWorking\20.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="image\3.png">
+    <Content Include="image\NotWorking\3.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="image\4.png">
+    <Content Include="image\NotWorking\4.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="image\5.png">
+    <Content Include="image\NotWorking\5.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="image\6.png">
+    <Content Include="image\NotWorking\6.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="image\7.png">
+    <Content Include="image\NotWorking\7.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="image\8.png">
+    <Content Include="image\NotWorking\8.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="image\9.png">
+    <Content Include="image\NotWorking\9.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="image\Ａ部分画像_Mat形式_ＵＩ１００パーセント.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="sound\chimes.wav">

@@ -37,7 +37,7 @@
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
             this.textBox1.ReadOnly = true;
-            this.textBox1.Size = new System.Drawing.Size(189, 81);
+            this.textBox1.Size = new System.Drawing.Size(189, 74);
             this.textBox1.TabIndex = 2;
             this.textBox1.TabStop = false;
             this.textBox1.WordWrap = false;
@@ -49,7 +49,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.BackColor = System.Drawing.Color.Yellow;
-            this.ClientSize = new System.Drawing.Size(189, 81);
+            this.ClientSize = new System.Drawing.Size(189, 74);
             this.ControlBox = false;
             this.Controls.Add(this.textBox1);
             this.Font = new System.Drawing.Font("游明朝 Demibold", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));

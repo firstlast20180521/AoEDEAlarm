@@ -8,34 +8,32 @@ using System.Threading.Tasks;
 namespace AoEDEAlarm {
     public class OpenCvUtil {
 
-        public static double FindImage(Mat mat1, Mat mat2) {
+        public static double FindImage(Mat mat1, Mat mat2, double thresh) {
             using (Mat result = new Mat()) {
                 // テンプレートマッチ
                 try {
                     Cv2.MatchTemplate(mat1, mat2, result, TemplateMatchModes.CCoeffNormed);
+
+                    // しきい値の範囲に絞る
+                    Cv2.Threshold(result, result, thresh, 1.0, ThresholdTypes.Tozero);
+
+                    // 類似度が最大/最小となる画素の位置を調べる
+                    OpenCvSharp.Point minloc, maxloc;
+                    double minval, maxval;
+                    Cv2.MinMaxLoc(result, out minval, out maxval, out minloc, out maxloc);
+
+                    if (maxval >= thresh) {
+                        // 見つかった場所に赤枠を表示
+                        //Rect rect = new Rect(maxloc.X, maxloc.Y, mat2.Width, mat2.Height);
+                        //Cv2.Rectangle(mat1, rect, new OpenCvSharp.Scalar(0, 0, 255), 2);
+                        //Cv2.ImShow(string.Format("min:<{0:f2}> max:<{1:f2}>", minval, maxval), mat1);
+                        //Cv2.WaitKey(100);
+                        return maxval;
+                    }
                 } catch (Exception ex) {
                     Console.WriteLine($"{ex.Message}");
                 }
-
-                // しきい値の範囲に絞る
-                Cv2.Threshold(result, result, 0.85, 1.0, ThresholdTypes.Tozero);
-
-                // 類似度が最大/最小となる画素の位置を調べる
-                OpenCvSharp.Point minloc, maxloc;
-                double minval, maxval;
-                Cv2.MinMaxLoc(result, out minval, out maxval, out minloc, out maxloc);
-
-                return maxval;
-
-                //if (maxval >= 0.80d) {
-                //    // 見つかった場所に赤枠を表示
-                //    //Rect rect = new Rect(maxloc.X, maxloc.Y, mat2.Width, mat2.Height);
-                //    //Cv2.Rectangle(mat1, rect, new OpenCvSharp.Scalar(0, 0, 255), 2);
-                //    return true;
-                //}
-
-                //return false;
-
+                return 0;
             }
 
         }

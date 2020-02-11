@@ -26,10 +26,12 @@ namespace AoEDEAlarm {
         }
 
         public async Task<bool> Run(CancellationToken token) {
+            //チェックする時間間隔を設定より代入する。
+            TimeSpan time_span = new TimeSpan(0, 0, 0, 0, GlobalValues.ApplicationSetting.CheckInterval);
+            DateTime last_clock = DateTime.MinValue;
 
             while (true) {
-
-                await Task.Delay(GlobalValues.ApplicationSetting.CheckInterval);
+                //複数のチェックにおいてアラームがあったとしても、最初のチェックのアラーム音だけ鳴らすためのフラグ。
                 bool isAlarmed = false;
 
                 if (token.IsCancellationRequested) {
@@ -38,6 +40,16 @@ namespace AoEDEAlarm {
                     });
                     break;
                 }
+
+                //一定時間が経過していない場合は、１ループパス
+                if ( DateTime.Now - last_clock < time_span) {
+                    //ここで鼓動を作り出している。
+                    await Task.Delay(300);
+                    continue;
+                }
+
+                //画像チェックを行なった時刻を変数に格納
+                last_clock = DateTime.Now;
 
                 //フルスクリーン矩形を作成
                 Rectangle rect = Screen.PrimaryScreen.Bounds;
@@ -48,9 +60,20 @@ namespace AoEDEAlarm {
                     //Bitmap bmp = Win32Api.CaptureActiveWindow();
 
                     //一旦ファイルに上書き保存
-                    //bmp.Save(AoedeStaticGlobal.DebugBitmapFileName1);
+                    //bmp.Save(@"D:\Work\画像調査\フルスクリーン画像.png");
 
                     using (Mat mat = BitmapConverter.ToMat(bmp)) {
+
+                        //
+                        //ミニマップ
+                        //
+                        string message;
+                        bool rtnMiniMap = CheckMiniMap(mat, out message);
+                        if (rtnMiniMap) {
+                            GlobalValues.Console.Invoke((MethodInvoker)delegate {
+                                GlobalValues.AddMessage($"--->{message}<---");
+                            });
+                        }
 
                         //
                         //プレイヤー
@@ -175,13 +198,42 @@ namespace AoEDEAlarm {
                 }
 
             }
+            //↑ループ
 
-            //}
             return true;
         }
 
+        private bool CheckMiniMap(Mat mat, out string message) {
+            message = "";
+            try {
+                Point loc = new Point(GlobalValues.ApplicationSetting.MiniMap.X, GlobalValues.ApplicationSetting.MiniMap.Y);
+                Size sz = new Size(GlobalValues.ApplicationSetting.MiniMap.Width, GlobalValues.ApplicationSetting.MiniMap.Height);
+                //double x = GlobalValues.ApplicationSetting.Housing.X * GlobalValues.Scale;
+                //double y = GlobalValues.ApplicationSetting.Housing.Y * GlobalValues.Scale;
+                //double width = GlobalValues.ApplicationSetting.Housing.Width * GlobalValues.Scale;
+                //double height = GlobalValues.ApplicationSetting.Housing.Height * GlobalValues.Scale;
+                //Point loc = new Point(x, y);
+                //Size sz = new Size(width, height);
+                using (Mat mat2 = mat.Clone(new OpenCvSharp.Rect(loc, sz))) {
+                    //mat2.ImWrite(@"D:\Work\画像調査\部分画像1.png",  );
+
+                    Scalar s_min = new Scalar(0, 0, 100);
+                    Scalar s_max = new Scalar(100, 100, 255);                    //The lower boundary is neither an array of the same size and same type as src, nor a scalar
+                    using (Mat mask_image = mat2.InRange(s_min, s_max)) {
+                        //Cv2.ImShow("mask_image", mask_image);
+                        //Cv2.WaitKey(10);
+                        message = "Done";
+                    }
+                }
+
+            } catch (Exception ex) {
+                Console.WriteLine($"{ex.Message}");
+            }
+            return true;
+
+        }
+
         private bool CheckPlayer(Mat mat, out string[] playerNames) {
-            //Cv2.ImRead("", ImreadModes.);
             playerNames = new string[8];
             for (int i = 0; i < playerNames.Length; i++) {
                 playerNames[i] = "";
@@ -189,6 +241,12 @@ namespace AoEDEAlarm {
             try {
                 Point loc = new Point(GlobalValues.ApplicationSetting.Players.X, GlobalValues.ApplicationSetting.Players.Y);
                 Size sz = new Size(GlobalValues.ApplicationSetting.Players.Width, GlobalValues.ApplicationSetting.Players.Height);
+                //double x = GlobalValues.ApplicationSetting.Housing.X * GlobalValues.Scale;
+                //double y = GlobalValues.ApplicationSetting.Housing.Y * GlobalValues.Scale;
+                //double width = GlobalValues.ApplicationSetting.Housing.Width * GlobalValues.Scale;
+                //double height = GlobalValues.ApplicationSetting.Housing.Height * GlobalValues.Scale;
+                //Point loc = new Point(x, y);
+                //Size sz = new Size(width, height);
                 using (Mat mat2 = mat.Clone(new OpenCvSharp.Rect(loc, sz))) {
                     //Cv2.ImShow("mat_mask_white", mat2);
                     //Cv2.WaitKey(10);
@@ -215,8 +273,16 @@ namespace AoEDEAlarm {
         private bool CheckHousingShortage(Mat mat, out int popNumerator, out int popDenominator) {
             Point loc = new Point(GlobalValues.ApplicationSetting.Housing.X, GlobalValues.ApplicationSetting.Housing.Y);
             Size sz = new Size(GlobalValues.ApplicationSetting.Housing.Width, GlobalValues.ApplicationSetting.Housing.Height);
+            //double x = GlobalValues.ApplicationSetting.Housing.X * GlobalValues.Scale;
+            //double y= GlobalValues.ApplicationSetting.Housing.Y * GlobalValues.Scale;
+            //double width= GlobalValues.ApplicationSetting.Housing.Width * GlobalValues.Scale;
+            //double height= GlobalValues.ApplicationSetting.Housing.Height * GlobalValues.Scale;
+            //Point loc = new Point(x, y);
+            //Size sz = new Size(width, height);
 
             using (Mat mat2 = mat.Clone(new OpenCvSharp.Rect(loc, sz))) {
+                //Cv2.ImShow("mat2", mat2);
+                //Cv2.WaitKey(100);
 
                 using (Mat mat3 = OpenCvUtil.Reverse(mat2)) {
                     using (Mat mat4 = new Mat()) {
@@ -264,6 +330,12 @@ namespace AoEDEAlarm {
         private int CheckWood(Mat mat) {
             Point loc = new Point(GlobalValues.ApplicationSetting.Wood.X, GlobalValues.ApplicationSetting.Wood.Y);
             Size sz = new Size(GlobalValues.ApplicationSetting.Wood.Width, GlobalValues.ApplicationSetting.Wood.Height);
+            //double x = GlobalValues.ApplicationSetting.Housing.X * GlobalValues.Scale;
+            //double y = GlobalValues.ApplicationSetting.Housing.Y * GlobalValues.Scale;
+            //double width = GlobalValues.ApplicationSetting.Housing.Width * GlobalValues.Scale;
+            //double height = GlobalValues.ApplicationSetting.Housing.Height * GlobalValues.Scale;
+            //Point loc = new Point(x, y);
+            //Size sz = new Size(width, height);
 
             using (Mat mat2 = mat.Clone(new OpenCvSharp.Rect(loc, sz))) {
 
@@ -288,9 +360,9 @@ namespace AoEDEAlarm {
                             //    );
 
                             //数値に分解
-                            int x = 0;
-                            bool r = int.TryParse(text, out x);
-                            return x;
+                            int v = 0;
+                            bool r = int.TryParse(text, out v);
+                            return v;
 
                             //await Task.Delay(1000);
 
@@ -306,6 +378,13 @@ namespace AoEDEAlarm {
         private int CheckFood(Mat mat) {
             Point loc = new Point(GlobalValues.ApplicationSetting.Food.X, GlobalValues.ApplicationSetting.Food.Y);
             Size sz = new Size(GlobalValues.ApplicationSetting.Food.Width, GlobalValues.ApplicationSetting.Food.Height);
+            //double x = GlobalValues.ApplicationSetting.Housing.X * GlobalValues.Scale;
+            //double y = GlobalValues.ApplicationSetting.Housing.Y * GlobalValues.Scale;
+            //double width = GlobalValues.ApplicationSetting.Housing.Width * GlobalValues.Scale;
+            //double height = GlobalValues.ApplicationSetting.Housing.Height * GlobalValues.Scale;
+            //Point loc = new Point(x, y);
+            //Size sz = new Size(width, height);
+
             using (Mat mat2 = mat.Clone(new OpenCvSharp.Rect(loc, sz))) {
                 using (Mat mat3 = OpenCvUtil.Reverse(mat2)) {
                     using (Mat mat4 = new Mat()) {
@@ -316,9 +395,9 @@ namespace AoEDEAlarm {
                             string text = page.GetText();
 
                             //数値に分解
-                            int x = 0;
-                            bool r = int.TryParse(text, out x);
-                            return x;
+                            int v = 0;
+                            bool r = int.TryParse(text, out v);
+                            return v;
                         }
                     }
                 }
@@ -328,6 +407,13 @@ namespace AoEDEAlarm {
         private int CheckGold(Mat mat) {
             Point loc = new Point(GlobalValues.ApplicationSetting.Gold.X, GlobalValues.ApplicationSetting.Gold.Y);
             Size sz = new Size(GlobalValues.ApplicationSetting.Gold.Width, GlobalValues.ApplicationSetting.Gold.Height);
+            //double x = GlobalValues.ApplicationSetting.Housing.X * GlobalValues.Scale;
+            //double y = GlobalValues.ApplicationSetting.Housing.Y * GlobalValues.Scale;
+            //double width = GlobalValues.ApplicationSetting.Housing.Width * GlobalValues.Scale;
+            //double height = GlobalValues.ApplicationSetting.Housing.Height * GlobalValues.Scale;
+            //Point loc = new Point(x, y);
+            //Size sz = new Size(width, height);
+
             using (Mat mat2 = mat.Clone(new OpenCvSharp.Rect(loc, sz))) {
                 using (Mat mat3 = OpenCvUtil.Reverse(mat2)) {
                     using (Mat mat4 = new Mat()) {
@@ -338,9 +424,9 @@ namespace AoEDEAlarm {
                             string text = page.GetText();
 
                             //数値に分解
-                            int x = 0;
-                            bool r = int.TryParse(text, out x);
-                            return x;
+                            int v = 0;
+                            bool r = int.TryParse(text, out v);
+                            return v;
                         }
                     }
                 }
@@ -350,6 +436,13 @@ namespace AoEDEAlarm {
         private int CheckStone(Mat mat) {
             Point loc = new Point(GlobalValues.ApplicationSetting.Stone.X, GlobalValues.ApplicationSetting.Stone.Y);
             Size sz = new Size(GlobalValues.ApplicationSetting.Stone.Width, GlobalValues.ApplicationSetting.Stone.Height);
+            //double x = GlobalValues.ApplicationSetting.Housing.X * GlobalValues.Scale;
+            //double y = GlobalValues.ApplicationSetting.Housing.Y * GlobalValues.Scale;
+            //double width = GlobalValues.ApplicationSetting.Housing.Width * GlobalValues.Scale;
+            //double height = GlobalValues.ApplicationSetting.Housing.Height * GlobalValues.Scale;
+            //Point loc = new Point(x, y);
+            //Size sz = new Size(width, height);
+
             using (Mat mat2 = mat.Clone(new OpenCvSharp.Rect(loc, sz))) {
                 using (Mat mat3 = OpenCvUtil.Reverse(mat2)) {
                     using (Mat mat4 = new Mat()) {
@@ -360,9 +453,9 @@ namespace AoEDEAlarm {
                             string text = page.GetText();
 
                             //数値に分解
-                            int x = 0;
-                            bool r = int.TryParse(text, out x);
-                            return x;
+                            int v = 0;
+                            bool r = int.TryParse(text, out v);
+                            return v;
                         }
                     }
                 }
@@ -373,121 +466,140 @@ namespace AoEDEAlarm {
 
             numberNotWorking = 0;
 
-            string[] files = System.IO.Directory.GetFiles(ConstValues.ImagePath, "*", System.IO.SearchOption.TopDirectoryOnly);
-
             Point loc = new Point(GlobalValues.ApplicationSetting.NotWorking.X, GlobalValues.ApplicationSetting.NotWorking.Y);
             Size sz = new Size(GlobalValues.ApplicationSetting.NotWorking.Width, GlobalValues.ApplicationSetting.NotWorking.Height);
+            //double x = GlobalValues.ApplicationSetting.Housing.X * GlobalValues.Scale;
+            //double y = GlobalValues.ApplicationSetting.Housing.Y * GlobalValues.Scale;
+            //double width = GlobalValues.ApplicationSetting.Housing.Width * GlobalValues.Scale;
+            //double height = GlobalValues.ApplicationSetting.Housing.Height * GlobalValues.Scale;
+            //Point loc = new Point(x, y);
+            //Size sz = new Size(width, height);
+
             using (Mat mat2 = mat1.Clone(new OpenCvSharp.Rect(loc, sz))) {
-                //mat2.ImWrite($@"D:\Work\Aaa\Aaa{_n++}.png");
 
                 double max_value = 0;
-                string max_x = "";
+                int max_idx = -1;
 
-                for (int i = 0; i < files.Length; i++) {
-                    using (Mat mat3 = new Mat(files[i], ImreadModes.Unchanged)) {
-                        //bool rtn1 = OpenCvUtil.FindImage(mat2, mat3);
-                        //if (rtn1) {
-                        //    string x = Path.GetFileNameWithoutExtension(files[i]);
-                        //    bool rtn2 = int.TryParse(x, out numberNotWorking);
-                        //    return true;
-                        //}
-                        double rtn1;
-                        rtn1 = OpenCvUtil.FindImage(mat2, mat3);
-                        if (rtn1 > max_value) {
-                            max_value = rtn1;
-                            max_x = Path.GetFileNameWithoutExtension(files[i]);
-                        }
+                for (int i = 0; i < GlobalValues.NotWorkingImageArray.Length; i++) {
+                    //using (Mat mat3 = GlobalValues.NotWorkingImageArray[i]) {
+                    //    double v = OpenCvUtil.FindImage(mat2, mat3, 0.5d);
+                    //    if (v > max_value) {
+                    //        max_value = v;
+                    //        max_idx = i;
+                    //    }
+                    //}
+                    //if (i==9) {
+                    //    Cv2.ImShow("mat2", mat2);
+                    //    Cv2.WaitKey(10);
+                    //    Cv2.ImShow("GlobalValues.NotWorkingImageArray[i]", GlobalValues.NotWorkingImageArray[i]);
+                    //    Cv2.WaitKey(10);
+                    //}
+                    double v = OpenCvUtil.FindImage(mat2, GlobalValues.NotWorkingImageArray[i], 0.5d);
+                    if (v > max_value) {
+                        max_value = v;
+                        max_idx = i;
                     }
                 }
 
-                if (max_value > 0.8d) {
-                    bool rtn3 = int.TryParse(max_x, out numberNotWorking);
-                    return true;
-                }
+                numberNotWorking = max_idx;
 
+                if (max_idx != -1) return true;
+                
                 return false;
 
             }
 
         }
 
-        private bool CheckNotWorking2(Mat mat, out int NumberNotWorking) {
-            Point loc = new Point(GlobalValues.ApplicationSetting.NotWorking.X, GlobalValues.ApplicationSetting.NotWorking.Y);
-            Size sz = new Size(GlobalValues.ApplicationSetting.NotWorking.Width, GlobalValues.ApplicationSetting.NotWorking.Height);
+        //private bool CheckNotWorking2(Mat mat, out int NumberNotWorking) {
+        //    Point loc = new Point(GlobalValues.ApplicationSetting.NotWorking.X, GlobalValues.ApplicationSetting.NotWorking.Y);
+        //    Size sz = new Size(GlobalValues.ApplicationSetting.NotWorking.Width, GlobalValues.ApplicationSetting.NotWorking.Height);
+        //    //double x = GlobalValues.ApplicationSetting.Housing.X * GlobalValues.Scale;
+        //    //double y = GlobalValues.ApplicationSetting.Housing.Y * GlobalValues.Scale;
+        //    //double width = GlobalValues.ApplicationSetting.Housing.Width * GlobalValues.Scale;
+        //    //double height = GlobalValues.ApplicationSetting.Housing.Height * GlobalValues.Scale;
+        //    //Point loc = new Point(x, y);
+        //    //Size sz = new Size(width, height);
 
-            using (Mat mat2 = mat.Clone(new OpenCvSharp.Rect(loc, sz))) {
+        //    using (Mat mat2 = mat.Clone(new OpenCvSharp.Rect(loc, sz))) {
 
-                using (Mat mat3 = OpenCvUtil.Reverse(mat2)) {
-                    using (Mat mat4 = new Mat()) {
-                        Cv2.Resize(mat3, mat4, new Size(mat3.Width * 3, mat3.Height * 3));
+        //        using (Mat mat3 = OpenCvUtil.Reverse(mat2)) {
+        //            using (Mat mat4 = new Mat()) {
+        //                Cv2.Resize(mat3, mat4, new Size(mat3.Width * 3, mat3.Height * 3));
 
-                        mat4.ImWrite(ConstValues.DebugBitmapFileName1);
+        //                mat4.ImWrite(ConstValues.DebugBitmapFileName1);
 
-                        using (var tesseract = new TesseractEngine(ConstValues.TessdataPath, "eng", EngineMode.LstmOnly)) {
-                            tesseract.SetVariable("tessedit_char_whitelist", "1234567890/");
-                            var page = tesseract.Process(mat4.ToBitmap());
-                            string text = page.GetText();
+        //                using (var tesseract = new TesseractEngine(ConstValues.TessdataPath, "eng", EngineMode.LstmOnly)) {
+        //                    tesseract.SetVariable("tessedit_char_whitelist", "1234567890/");
+        //                    var page = tesseract.Process(mat4.ToBitmap());
+        //                    string text = page.GetText();
 
-                            //最前面
-                            //MessageBox.Show(text: $"->{text}<-"
-                            //    , caption: "AoEDEAlarm"
-                            //    , buttons: MessageBoxButtons.OK
-                            //    , icon: MessageBoxIcon.Information
-                            //    , defaultButton: MessageBoxDefaultButton.Button1
-                            //    , options: MessageBoxOptions.DefaultDesktopOnly
-                            //    );
+        //                    //最前面
+        //                    //MessageBox.Show(text: $"->{text}<-"
+        //                    //    , caption: "AoEDEAlarm"
+        //                    //    , buttons: MessageBoxButtons.OK
+        //                    //    , icon: MessageBoxIcon.Information
+        //                    //    , defaultButton: MessageBoxDefaultButton.Button1
+        //                    //    , options: MessageBoxOptions.DefaultDesktopOnly
+        //                    //    );
 
-                            //数値に分解
-                            return int.TryParse(text, out NumberNotWorking);
+        //                    //数値に分解
+        //                    return int.TryParse(text, out NumberNotWorking);
 
-                        }
-
-
-                    }
-                }
-            }
-        }
+        //                }
 
 
-        private bool CheckNotWorking1(Mat mat, out int NumberNotWorking) {
-            Point loc = new Point(GlobalValues.ApplicationSetting.NotWorking.X, GlobalValues.ApplicationSetting.NotWorking.Y);
-            Size sz = new Size(GlobalValues.ApplicationSetting.NotWorking.Width, GlobalValues.ApplicationSetting.NotWorking.Height);
+        //            }
+        //        }
+        //    }
+        //}
 
-            using (Mat mat2 = mat.Clone(new OpenCvSharp.Rect(loc, sz))) {
-                using (var mat_hsv = mat2.CvtColor(ColorConversionCodes.BGR2HSV)) {
-                    InputArray lower_white = InputArray.Create(new int[3] { 0, 0, 100 });
-                    InputArray upper_white = InputArray.Create(new int[3] { 180, 45, 255 });
-                    using (Mat mat_mask_white = mat_hsv.InRange(lower_white, upper_white)) {
-                        using (Mat mat_reversed = OpenCvUtil.Reverse(mat_mask_white)) {
-                            Cv2.Resize(mat_reversed, mat_reversed, new Size(mat_reversed.Width * 4, mat_reversed.Height * 4));
-                            //Cv2.ImShow("Input image for Tesseract", mat_reversed);
-                            //Cv2.WaitKey(1000);
 
-                            mat_reversed.ImWrite(ConstValues.DebugBitmapFileName2);
+        //private bool CheckNotWorking1(Mat mat, out int NumberNotWorking) {
+        //    Point loc = new Point(GlobalValues.ApplicationSetting.NotWorking.X, GlobalValues.ApplicationSetting.NotWorking.Y);
+        //    Size sz = new Size(GlobalValues.ApplicationSetting.NotWorking.Width, GlobalValues.ApplicationSetting.NotWorking.Height);
+        //    //double x = GlobalValues.ApplicationSetting.Housing.X * GlobalValues.Scale;
+        //    //double y = GlobalValues.ApplicationSetting.Housing.Y * GlobalValues.Scale;
+        //    //double width = GlobalValues.ApplicationSetting.Housing.Width * GlobalValues.Scale;
+        //    //double height = GlobalValues.ApplicationSetting.Housing.Height * GlobalValues.Scale;
+        //    //Point loc = new Point(x, y);
+        //    //Size sz = new Size(width, height);
 
-                            using (var tesseract = new TesseractEngine(ConstValues.TessdataPath, "eng", EngineMode.LstmOnly)) {
-                                tesseract.SetVariable("tessedit_char_whitelist", "1234567890");
-                                var page = tesseract.Process(mat_reversed.ToBitmap());
-                                string text = page.GetText();
+        //    using (Mat mat2 = mat.Clone(new OpenCvSharp.Rect(loc, sz))) {
+        //        using (var mat_hsv = mat2.CvtColor(ColorConversionCodes.BGR2HSV)) {
+        //            InputArray lower_white = InputArray.Create(new int[3] { 0, 0, 100 });
+        //            InputArray upper_white = InputArray.Create(new int[3] { 180, 45, 255 });
+        //            using (Mat mat_mask_white = mat_hsv.InRange(lower_white, upper_white)) {
+        //                using (Mat mat_reversed = OpenCvUtil.Reverse(mat_mask_white)) {
+        //                    Cv2.Resize(mat_reversed, mat_reversed, new Size(mat_reversed.Width * 4, mat_reversed.Height * 4));
+        //                    //Cv2.ImShow("Input image for Tesseract", mat_reversed);
+        //                    //Cv2.WaitKey(1000);
 
-                                //最前面
-                                //MessageBox.Show(text: $"->{text}<-"
-                                //    , caption: "AoEDEAlarm"
-                                //    , buttons: MessageBoxButtons.OK
-                                //    , icon: MessageBoxIcon.Information
-                                //    , defaultButton: MessageBoxDefaultButton.Button1
-                                //    , options: MessageBoxOptions.DefaultDesktopOnly
-                                //    );
+        //                    mat_reversed.ImWrite(ConstValues.DebugBitmapFileName2);
 
-                                return int.TryParse(text, out NumberNotWorking);
+        //                    using (var tesseract = new TesseractEngine(ConstValues.TessdataPath, "eng", EngineMode.LstmOnly)) {
+        //                        tesseract.SetVariable("tessedit_char_whitelist", "1234567890");
+        //                        var page = tesseract.Process(mat_reversed.ToBitmap());
+        //                        string text = page.GetText();
 
-                            }
+        //                        //最前面
+        //                        //MessageBox.Show(text: $"->{text}<-"
+        //                        //    , caption: "AoEDEAlarm"
+        //                        //    , buttons: MessageBoxButtons.OK
+        //                        //    , icon: MessageBoxIcon.Information
+        //                        //    , defaultButton: MessageBoxDefaultButton.Button1
+        //                        //    , options: MessageBoxOptions.DefaultDesktopOnly
+        //                        //    );
 
-                        }
-                    }
-                }
-            }
-        }
+        //                        return int.TryParse(text, out NumberNotWorking);
+
+        //                    }
+
+        //                }
+        //            }
+        //        }
+        //    }
+        //}
 
         #region IDisposable Support
         private bool disposedValue = false; // 重複する呼び出しを検出するには
