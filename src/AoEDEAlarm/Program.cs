@@ -8,6 +8,10 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing;
 using System.Diagnostics;
+using OpenCvSharp.Extensions;
+using OpenCvSharp;
+using System.IO;
+using System.Drawing.Imaging;
 
 namespace AoEDEAlarm {
     class Program {
@@ -54,7 +58,21 @@ namespace AoEDEAlarm {
                     StartHotkeys();
                     NotifyIcon ni = SetNotifyIcon();
 
+                    GlobalValues.Console.ContextMenuClick += Console_ContextMenuClick; ;
+
+                    GlobalValues.IsRunning = false;
+                    //AlarmMessageList = new List<AlarmMessageClass>();
+                    GlobalValues.Scale = GetScale();
+                    GlobalValues.NotWorkingImageArray = GetNotWorkingImageArray(GlobalValues.Scale);
+
+
+                    //初期メッセージ
+                    GlobalValues.Console.Add($"監視開始：{HotKey.GetKeysString((Keys)GlobalValues.ApplicationSetting.Hotkey_Run)}");
+                    GlobalValues.Console.Add($"監視中断：{HotKey.GetKeysString((Keys)GlobalValues.ApplicationSetting.Hotkey_Stop)}");
+                    GlobalValues.Console.Add($"位置設定：{HotKey.GetKeysString((Keys)GlobalValues.ApplicationSetting.Hotkey_Customise)}");
                     GlobalValues.Console.Show();
+                    GlobalValues.Console.Start();
+
                     System.Windows.Forms.Application.Run();
 
                     ni.Dispose();
@@ -76,6 +94,21 @@ namespace AoEDEAlarm {
             }
 
 
+        }
+
+        private static void Console_ContextMenuClick(object sender, TransparentMessage.ContextMenuClickedEventArgs e) {
+            if (e.contextMenuItem == TransparentMessage.ContextMenuItems.AdjustVolume) {
+                VolumeAdjustForm f = new VolumeAdjustForm();
+                f.ShowDialog();
+            } else if (e.contextMenuItem == TransparentMessage.ContextMenuItems.StartMonitoring) {
+                Program.StartMonitoring();
+            } else if (e.contextMenuItem == TransparentMessage.ContextMenuItems.StopMonitoring) {
+                Program.StopMonitoring();
+            } else if (e.contextMenuItem == TransparentMessage.ContextMenuItems.ShowPositionSettingForm) {
+                Program.ShowPositionSettingForm();
+            } else if (e.contextMenuItem == TransparentMessage.ContextMenuItems.ExitProgram) {
+                GlobalValues.Console.Finish();
+            }
         }
 
         private static NotifyIcon SetNotifyIcon() {
@@ -230,7 +263,9 @@ namespace AoEDEAlarm {
                 }, token);
 
                 //最前面
-                GlobalValues.AddMessage("監視処理を開始しました。");
+                //GlobalValues.AddMessage("監視処理を開始しました。");
+                GlobalValues.Console.Add("監視処理を開始しました。");
+
                 //MessageBox.Show(text: $"アラーム処理を開始しました。"
                 //    , caption: "AoEDEAlarm"
                 //    , buttons: MessageBoxButtons.OK
@@ -260,7 +295,8 @@ namespace AoEDEAlarm {
 
         public static void StopMonitoring() {
             GlobalValues.AlarmTokenSource?.Cancel();
-            GlobalValues.AddMessage("監視処理を中断します。");
+            //GlobalValues.AddMessage("監視処理を中断します。");
+            GlobalValues.Console.Add("監視処理を中断します。");
         }
 
         /// <summary>
@@ -337,6 +373,67 @@ namespace AoEDEAlarm {
             System.Diagnostics.Process.Start("file://" + ConstValues.HelpFileName);
         }
 
+        private static Mat[] GetNotWorkingImageArray(double scale) {
+            string[] files = System.IO.Directory.GetFiles(ConstValues.NotWorkingImagePath, "*", System.IO.SearchOption.TopDirectoryOnly);
+            Mat[] notWorkingImageArray = new Mat[files.Length];
+            for (int i = 0; i < files.Length; i++) {
+                using (Mat mat_original = new Mat(files[i], ImreadModes.Unchanged)) {
+                    using (Mat mat_rotation = Cv2.GetRotationMatrix2D(new Point2f(0, 0), 0d, scale)) {
+                        //using (Mat mat_affined = new Mat()) {
+                        //    Cv2.WarpAffine(mat_original, mat_affined, mat_rotation, new OpenCvSharp.Size((double)mat_original.Width * scale, (double)mat_original.Height * scale));
+                        //    int idx;
+                        //    bool rtn = int.TryParse(Path.GetFileNameWithoutExtension(files[i]), out idx);
+                        //    if (rtn) {
+                        //        NotWorkingImageArray[idx] = mat_affined;
+                        //    }
+                        //}
+
+                        Mat mat_affined = new Mat();
+                        Cv2.WarpAffine(mat_original, mat_affined, mat_rotation, new OpenCvSharp.Size((double)mat_original.Width * scale, (double)mat_original.Height * scale));
+                        int idx;
+                        bool rtn = int.TryParse(Path.GetFileNameWithoutExtension(files[i]), out idx);
+                        if (rtn) {
+                            notWorkingImageArray[idx] = mat_affined;
+                        }
+                    }
+                }
+            }
+            return notWorkingImageArray;
+        }
+
+        private static double GetScale() {
+
+            double max_value = 0;
+            double max_scalse = 0;
+
+            Rectangle rect = Screen.PrimaryScreen.Bounds;
+            using (Bitmap bmp = new Bitmap(rect.Width, rect.Height, PixelFormat.Format32bppArgb)) {
+                Graphics g = Graphics.FromImage(bmp);
+                g.CopyFromScreen(rect.X, rect.Y, 0, 0, rect.Size, CopyPixelOperation.SourceCopy);
+                using (Mat mat_full_screen = BitmapConverter.ToMat(bmp)) {
+                    using (Mat mat_stone_age = new Mat(ConstValues.RulerImageFileName, ImreadModes.Unchanged)) {
+
+                        for (int i = 75; i <= 150; i++) {
+
+                            double scale = ((double)i / (double)100);
+
+                            using (Mat mat_rotation = Cv2.GetRotationMatrix2D(new Point2f(0, 0), 0d, scale)) {
+                                using (Mat mat_affined = new Mat()) {
+                                    Cv2.WarpAffine(mat_stone_age, mat_affined, mat_rotation, new OpenCvSharp.Size((double)mat_stone_age.Width * scale, (double)mat_stone_age.Height * scale));
+
+                                    double v = OpenCvUtil.FindImage(mat_full_screen, mat_affined, 0.7d);
+                                    if (v > max_value) {
+                                        max_value = v;
+                                        max_scalse = scale;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return max_scalse;
+        }
 
 
     }

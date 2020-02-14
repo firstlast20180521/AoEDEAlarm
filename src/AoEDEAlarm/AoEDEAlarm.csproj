@@ -88,6 +88,13 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="SoundSettingClass.cs" />
+    <Compile Include="TransparentForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TransparentForm.Designer.cs">
+      <DependentUpon>TransparentForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TransparentMessage.cs" />
     <Compile Include="VolumeAdjustForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -95,12 +102,6 @@
       <DependentUpon>VolumeAdjustForm.cs</DependentUpon>
     </Compile>
     <Compile Include="XmlUtilityClass.cs" />
-    <Compile Include="TransparentForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="TransparentForm.Designer.cs">
-      <DependentUpon>TransparentForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="OpenCvUtil.cs" />
     <Compile Include="PositionSettingForm.cs">
       <SubType>Form</SubType>
@@ -146,15 +147,15 @@
     <EmbeddedResource Include="HotkeySettingForm.resx">
       <DependentUpon>HotkeySettingForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="TransparentForm.resx">
-      <DependentUpon>TransparentForm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="PositionSettingForm.resx">
       <DependentUpon>PositionSettingForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TransparentForm.resx">
+      <DependentUpon>TransparentForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="VolumeAdjustForm.resx">
       <DependentUpon>VolumeAdjustForm.cs</DependentUpon>

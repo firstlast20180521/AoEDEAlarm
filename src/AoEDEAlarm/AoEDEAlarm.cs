@@ -35,9 +35,10 @@ namespace AoEDEAlarm {
                 bool isAlarmed = false;
 
                 if (token.IsCancellationRequested) {
-                    GlobalValues.Console.Invoke((MethodInvoker)delegate {
-                        GlobalValues.AddMessage("監視処理を中断しました。");
-                    });
+                    //GlobalValues.Console.Invoke((MethodInvoker)delegate {
+                    //    GlobalValues.AddMessage("監視処理を中断しました。");
+                    //});
+                    GlobalValues.Console.Add("監視処理を中断しました。");
                     break;
                 }
 
@@ -70,9 +71,7 @@ namespace AoEDEAlarm {
                         string message;
                         bool rtnMiniMap = CheckMiniMap(mat, out message);
                         if (rtnMiniMap) {
-                            GlobalValues.Console.Invoke((MethodInvoker)delegate {
-                                GlobalValues.AddMessage($"--->{message}<---");
-                            });
+                            //GlobalValues.Console.Add($"--->{message}<---");
                         }
 
                         //
@@ -82,10 +81,10 @@ namespace AoEDEAlarm {
                         bool rtnPlayer = CheckPlayer(mat, out playerNames);
                         if (rtnPlayer) {
                             for (int i = 0; i < playerNames.Length; i++) {
-                                GlobalValues.Console.Invoke((MethodInvoker)delegate {
-                                    //GlobalValues.Console.Start($"--->{playerNames[i]}<---");
-                                    //GlobalValues.AddMessage($"--->{playerNames[i]}<---");
-                                });
+                                //GlobalValues.Console.Invoke((MethodInvoker)delegate {
+                                //    //GlobalValues.Console.Start($"--->{playerNames[i]}<---");
+                                //    //GlobalValues.AddMessage($"--->{playerNames[i]}<---");
+                                //});
                             }
                         }
 
@@ -99,9 +98,10 @@ namespace AoEDEAlarm {
                                 GlobalValues2.AudioHelper_WoodStock.Play(GlobalValues.ApplicationSetting.MasterVolume);
                                 isAlarmed = true;
                             }
-                            GlobalValues.Console.Invoke((MethodInvoker)delegate {
-                                GlobalValues.AddMessage($"木が{woodValue}余っています。");
-                            });
+                            //GlobalValues.Console.Invoke((MethodInvoker)delegate {
+                            //    GlobalValues.AddMessage($"木が{woodValue}余っています。");
+                            //});
+                            GlobalValues.Console.Add($"木が{woodValue}余っています。");
                             //continue;
                         }
 
@@ -115,10 +115,10 @@ namespace AoEDEAlarm {
                                 GlobalValues2.AudioHelper_FoodStock.Play(GlobalValues.ApplicationSetting.MasterVolume);
                                 isAlarmed = true;
                             }
-                            GlobalValues.Console.Invoke((MethodInvoker)delegate {
-                                GlobalValues.AddMessage($"食料が{foodValue}余っています。");
-                            });
-                            //continue;
+                            //GlobalValues.Console.Invoke((MethodInvoker)delegate {
+                            //    GlobalValues.AddMessage($"食料が{foodValue}余っています。");
+                            //});
+                            GlobalValues.Console.Add($"食料が{foodValue}余っています。");
                         }
 
                         //
@@ -131,10 +131,10 @@ namespace AoEDEAlarm {
                                 GlobalValues2.AudioHelper_GoldStock.Play(GlobalValues.ApplicationSetting.MasterVolume);
                                 isAlarmed = true;
                             }
-                            GlobalValues.Console.Invoke((MethodInvoker)delegate {
-                                GlobalValues.AddMessage($"金が{goldValue}余っています。");
-                            });
-                            //continue;
+                            //GlobalValues.Console.Invoke((MethodInvoker)delegate {
+                            //    GlobalValues.AddMessage($"金が{goldValue}余っています。");
+                            //});
+                            GlobalValues.Console.Add($"金が{goldValue}余っています。");
                         }
 
                         //
@@ -147,10 +147,10 @@ namespace AoEDEAlarm {
                                 GlobalValues2.AudioHelper_StoneStock.Play(GlobalValues.ApplicationSetting.MasterVolume);
                                 isAlarmed = true;
                             }
-                            GlobalValues.Console.Invoke((MethodInvoker)delegate {
-                                GlobalValues.AddMessage($"石が{stoneValue}余っています。");
-                            });
-                            //continue;
+                            //GlobalValues.Console.Invoke((MethodInvoker)delegate {
+                            //    GlobalValues.AddMessage($"石が{stoneValue}余っています。");
+                            //});
+                            GlobalValues.Console.Add($"石が{stoneValue}余っています。");
                         }
 
                         //
@@ -166,10 +166,10 @@ namespace AoEDEAlarm {
                                     GlobalValues2.AudioHelper_NotWorking.Play(GlobalValues.ApplicationSetting.MasterVolume);
                                     isAlarmed = true;
                                 }
-                                GlobalValues.Console.Invoke((MethodInvoker)delegate {
-                                    GlobalValues.AddMessage($"農民が{numberNotWorking}人遊んでいます。");
-                                });
-                                //continue;
+                                //GlobalValues.Console.Invoke((MethodInvoker)delegate {
+                                //    GlobalValues.AddMessage($"農民が{numberNotWorking}人遊んでいます。");
+                                //});
+                                GlobalValues.Console.Add($"農民が{numberNotWorking}人遊んでいます。");
                             }
                         }
 
@@ -186,10 +186,10 @@ namespace AoEDEAlarm {
                                     GlobalValues2.AudioHelper_Housing.Play(GlobalValues.ApplicationSetting.MasterVolume);
                                     isAlarmed = true;
                                 }
-                                GlobalValues.Console.Invoke((MethodInvoker)delegate {
-                                    GlobalValues.AddMessage($"家が不足しています。");
-                                });
-                                //continue;
+                                //GlobalValues.Console.Invoke((MethodInvoker)delegate {
+                                //    GlobalValues.AddMessage($"家が不足しています。");
+                                //});
+                                GlobalValues.Console.Add($"家が不足しています。");
                             }
                         }
 
@@ -222,7 +222,7 @@ namespace AoEDEAlarm {
                     using (Mat mask_image = mat2.InRange(s_min, s_max)) {
                         //Cv2.ImShow("mask_image", mask_image);
                         //Cv2.WaitKey(10);
-                        message = "Done";
+                        //message = "Done";
                     }
                 }
 
