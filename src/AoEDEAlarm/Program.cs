@@ -57,13 +57,9 @@ namespace AoEDEAlarm {
 
                     StartHotkeys();
                     NotifyIcon ni = SetNotifyIcon();
-
                     GlobalValues.Console.ContextMenuClick += Console_ContextMenuClick; ;
-
                     GlobalValues.IsRunning = false;
-                    //AlarmMessageList = new List<AlarmMessageClass>();
-                    GlobalValues.Scale = GetScale();
-                    GlobalValues.NotWorkingImageArray = GetNotWorkingImageArray(GlobalValues.Scale);
+                    GlobalValues.NotWorkingImageArray = GetNotWorkingImageArray(GlobalValues.ApplicationSetting.UiScale);
 
 
                     //初期メッセージ
@@ -83,7 +79,6 @@ namespace AoEDEAlarm {
                     // アプリケーション例外処理
                     Console.WriteLine(ex.Message);
 
-                    //throw;
                 } finally {
                     if (hasHandle) {
                         mutex.ReleaseMutex();
@@ -96,21 +91,105 @@ namespace AoEDEAlarm {
 
         }
 
-        private static void Console_ContextMenuClick(object sender, TransparentMessage.ContextMenuClickedEventArgs e) {
-            if (e.contextMenuItem == TransparentMessage.ContextMenuItems.AdjustVolume) {
-                VolumeAdjustForm f = new VolumeAdjustForm();
-                f.ShowDialog();
-            } else if (e.contextMenuItem == TransparentMessage.ContextMenuItems.StartMonitoring) {
-                Program.StartMonitoring();
-            } else if (e.contextMenuItem == TransparentMessage.ContextMenuItems.StopMonitoring) {
-                Program.StopMonitoring();
-            } else if (e.contextMenuItem == TransparentMessage.ContextMenuItems.ShowPositionSettingForm) {
-                Program.ShowPositionSettingForm();
-            } else if (e.contextMenuItem == TransparentMessage.ContextMenuItems.ExitProgram) {
-                GlobalValues.Console.Finish();
-            }
+        public static void StartHotkeys() {
+            GlobalValues.Hotkey_Run = new HotKey((Keys)GlobalValues.ApplicationSetting.Hotkey_Run);
+            GlobalValues.Hotkey_Stop = new HotKey((Keys)GlobalValues.ApplicationSetting.Hotkey_Stop);
+            GlobalValues.Hotkey_Customise = new HotKey((Keys)GlobalValues.ApplicationSetting.Hotkey_Customise);
+
+            GlobalValues.Hotkey_Run.HotkeyEvent += Hotkey_Run_HotkeyEvent;
+            GlobalValues.Hotkey_Stop.HotkeyEvent += Hotkey_Stop_HotkeyEvent;
+            GlobalValues.Hotkey_Customise.HotkeyEvent += Hotkey_Customise_HotkeyEvent;
+
         }
 
+        public static void FinishHotkeys() {
+            GlobalValues.Hotkey_Run.Dispose();
+            GlobalValues.Hotkey_Stop.Dispose();
+            GlobalValues.Hotkey_Customise.Dispose();
+        }
+
+        /// <summary>
+        /// ホットキー押下時処理（監視処理開始）
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private static void Hotkey_Run_HotkeyEvent(object sender, EventArgs e) {
+            StartMonitoring();
+        }
+
+        /// <summary>
+        /// ホットキー押下時処理（監視処理中断）
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private static void Hotkey_Stop_HotkeyEvent(object sender, EventArgs e) {
+            StopMonitoring();
+        }
+
+        /// <summary>
+        /// ホットキー押下時処理（設定画面表示）
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private static void Hotkey_Customise_HotkeyEvent(object sender, EventArgs e) {
+            ShowPositionSettingForm();
+        }
+
+        /// <summary>
+        /// 右クリックメニュー（監視開始）
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private static void TsmItemFinishMonitoring_Click(object sender, EventArgs e) {
+            StopMonitoring();
+        }
+
+        /// <summary>
+        /// 右クリックメニュー（監視終了）
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private static void TsmItemStartMonitoring_Click(object sender, EventArgs e) {
+            StartMonitoring();
+        }
+
+        /// <summary>
+        /// 右クリックメニュー（設定画面表示）
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private static void TsmItemHotkeySetting_Click(object sender, EventArgs e) {
+            ShowHotkeySettingForm();
+        }
+
+        /// <summary>
+        /// 右クリックメニュー（ヘルプ画面）
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private static void TsmItemHelp_Click(object sender, EventArgs e) {
+            System.Diagnostics.Process.Start("file://" + ConstValues.HelpFileName);
+        }
+
+        /// <summary>
+        /// 右クリックメニュー（アプリケーション終了）
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private static void TsmItemExitApplication_Click(object sender, EventArgs e) {
+
+            try {
+                GlobalValues.AlarmTokenSource?.Cancel();
+            } catch (Exception) {
+            }
+
+            Application.Exit();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         private static NotifyIcon SetNotifyIcon() {
             NotifyIcon ni;
 
@@ -121,84 +200,69 @@ namespace AoEDEAlarm {
 
             ContextMenuStrip cms = new ContextMenuStrip();
 
-            ToolStripMenuItem item_start_monitoring = new ToolStripMenuItem() {
+            ToolStripMenuItem TsmItemStartMonitoring = new ToolStripMenuItem() {
                 Text = "監視開始",
                 Image = null,
                 Name = "監視開始ToolStripMenuItem",
             };
-            item_start_monitoring.Click += item_start_monitoring_Click;
 
-            ToolStripMenuItem item_finish_monitoring = new ToolStripMenuItem() {
+            ToolStripMenuItem TsmItemFinishMonitoring = new ToolStripMenuItem() {
                 Text = "監視終了",
                 Image = null,
                 Name = "監視終了ToolStripMenuItem",
             };
-            item_finish_monitoring.Click += Item_finish_monitoring_Click;
 
-            ToolStripMenuItem item_hotkey_setting = new ToolStripMenuItem() {
+            ToolStripMenuItem TsmItemShowHotkeySettingForm = new ToolStripMenuItem() {
                 Text = "ホットキー設定",
                 Image = null,
                 Name = "ホットキー設定ToolStripMenuItem",
             };
-            item_hotkey_setting.Click += Item2_Click;
 
-            ToolStripMenuItem item_help = new ToolStripMenuItem() {
+            ToolStripMenuItem TsmItemHelp = new ToolStripMenuItem() {
                 Text = "ヘルプ",
                 Image = null,
                 Name = "ヘルプToolStripMenuItem",
             };
-            item_help.Click += Item3_Click;
 
-            ToolStripMenuItem item_exit_application = new ToolStripMenuItem() {
+            ToolStripMenuItem TsmItemExitApplication = new ToolStripMenuItem() {
                 Text = "終了",
                 Image = null,
                 Name = "終了ToolStripMenuItem",
             };
-            item_exit_application.Click += Item1_Click;
 
-            cms.Items.Add(item_start_monitoring);
-            cms.Items.Add(item_finish_monitoring);
-            cms.Items.Add(item_hotkey_setting);
-            cms.Items.Add(item_help);
-            cms.Items.Add(item_exit_application);
+            cms.Items.Add(TsmItemStartMonitoring);
+            cms.Items.Add(TsmItemFinishMonitoring);
+            cms.Items.Add(TsmItemShowHotkeySettingForm);
+            cms.Items.Add(TsmItemHelp);
+            cms.Items.Add(TsmItemExitApplication);
             ni.ContextMenuStrip = cms;
 
+            TsmItemStartMonitoring.Click += TsmItemStartMonitoring_Click;
+            TsmItemFinishMonitoring.Click += TsmItemFinishMonitoring_Click;
+            TsmItemShowHotkeySettingForm.Click += TsmItemHotkeySetting_Click;
+            TsmItemHelp.Click += TsmItemHelp_Click;
+            TsmItemExitApplication.Click += TsmItemExitApplication_Click;
+
             return ni;
-
         }
 
-        private static void Item_finish_monitoring_Click(object sender, EventArgs e) {
-            Hk_Stop_HotkeyEvent(sender, e);
-        }
+        public static void ShowHotkeySettingForm() {
+            if (GlobalValues.IsRunning) {
+                MessageBox.Show(text: $"監視処理を終了する必要があります。"
+                    , caption: "AoEDEAlarm"
+                    , buttons: MessageBoxButtons.OK
+                    , icon: MessageBoxIcon.Error
+                    , defaultButton: MessageBoxDefaultButton.Button1
+                    , options: MessageBoxOptions.DefaultDesktopOnly
+                    );
+                return;
 
-        private static void item_start_monitoring_Click(object sender, EventArgs e) {
-            Hk_Run_HotkeyEvent(sender, e);
-        }
-
-        private static void StartHotkeys() {
-            GlobalValues.Hotkey_Run = new HotKey((Keys)GlobalValues.ApplicationSetting.Hotkey_Run);
-            GlobalValues.Hotkey_Stop = new HotKey((Keys)GlobalValues.ApplicationSetting.Hotkey_Stop);
-            GlobalValues.Hotkey_Customise = new HotKey((Keys)GlobalValues.ApplicationSetting.Hotkey_Customise);
-
-            GlobalValues.Hotkey_Run.HotkeyEvent += Hk_Run_HotkeyEvent;
-            GlobalValues.Hotkey_Stop.HotkeyEvent += Hk_Stop_HotkeyEvent;
-            GlobalValues.Hotkey_Customise.HotkeyEvent += Hk_Setting_HotkeyEvent;
-
-        }
-
-        private static void FinishHotkeys() {
-            GlobalValues.Hotkey_Run.Dispose();
-            GlobalValues.Hotkey_Stop.Dispose();
-            GlobalValues.Hotkey_Customise.Dispose();
-        }
-
-        /// <summary>
-        /// 監視処理開始
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private static void Hk_Run_HotkeyEvent(object sender, EventArgs e) {
-            StartMonitoring();
+            }
+            FinishHotkeys();
+            HotkeySettingForm f = new HotkeySettingForm();
+            f.TopMost = true;
+            f.ShowDialog();
+            StartHotkeys();
         }
 
         public static void StartMonitoring() {
@@ -227,53 +291,27 @@ namespace AoEDEAlarm {
 
             GlobalValues.IsRunning = true;
 
-            //string zz = Win32Api.GetActiveWindowProductName();
-            //Debug.WriteLine(zz);
-            //Console.WriteLine(zz);
-            //Util.Xxx();
             /*
-            プロセス名: AoEDE
-            ID: 21444
-            ファイル名: C:\Program Files\WindowsApps\Microsoft.Darwin_100.1.34483.0_x64__8wekyb3d8bbwe\AoEDE.exe
-            合計プロセッサ時間: 00:04:25.8125000
-            物理メモリ使用量: 1801117696
+            string zz = Win32Api.GetActiveWindowProductName();
+            Console.WriteLine(zz);
+            //プロセス名: AoEDE
+            //ID: 21444
+            //ファイル名: C:\Program Files\WindowsApps\Microsoft.Darwin_100.1.34483.0_x64__8wekyb3d8bbwe\AoEDE.exe
+            //合計プロセッサ時間: 00:04:25.8125000
+            //物理メモリ使用量: 1801117696
+            if (Win32Api.GetActiveWindowProductName() != "AoEDE") return;
+            //if (Win32Api.GetActiveWindowProductName() != "AoEDEAlarm") return;
             */
-            //Application.
-
-            //if (Win32Api.GetActiveWindowProductName() != "AoEDE") return;
 
             GlobalValues.AlarmTokenSource = new CancellationTokenSource();
             CancellationToken token = GlobalValues.AlarmTokenSource.Token;
 
             using (AoEDEAlarm a = new AoEDEAlarm()) {
-
                 Task.Run(async () => {
-                    //Global.IsRunning = true;
                     bool rtn = await a.Run(token: token);
-                    //最前面
-                    //MessageBox.Show(text: $"監視処理を中断しました。"
-                    //    , caption: "AoEDEAlarm"
-                    //    , buttons: MessageBoxButtons.OK
-                    //    , icon: MessageBoxIcon.Information
-                    //    , defaultButton: MessageBoxDefaultButton.Button1
-                    //    , options: MessageBoxOptions.DefaultDesktopOnly
-                    //    );
                     GlobalValues.IsRunning = false;
-                    //AoedeGlobal.Console.Start("監視処理を中断しました。");
                 }, token);
-
-                //最前面
-                //GlobalValues.AddMessage("監視処理を開始しました。");
                 GlobalValues.Console.Add("監視処理を開始しました。");
-
-                //MessageBox.Show(text: $"アラーム処理を開始しました。"
-                //    , caption: "AoEDEAlarm"
-                //    , buttons: MessageBoxButtons.OK
-                //    , icon: MessageBoxIcon.Information
-                //    , defaultButton: MessageBoxDefaultButton.Button1
-                //    , options: MessageBoxOptions.DefaultDesktopOnly
-                //    );
-
             }
         }
 
@@ -283,29 +321,9 @@ namespace AoEDEAlarm {
             return true;
         }
 
-        /// <summary>
-        /// 監視処理中断
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private static void Hk_Stop_HotkeyEvent(object sender, EventArgs e) {
-            StopMonitoring();
-
-        }
-
         public static void StopMonitoring() {
             GlobalValues.AlarmTokenSource?.Cancel();
-            //GlobalValues.AddMessage("監視処理を中断します。");
             GlobalValues.Console.Add("監視処理を中断します。");
-        }
-
-        /// <summary>
-        /// 設定画面表示
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private static void Hk_Setting_HotkeyEvent(object sender, EventArgs e) {
-            ShowPositionSettingForm();
         }
 
         public static void ShowPositionSettingForm() {
@@ -321,75 +339,27 @@ namespace AoEDEAlarm {
 
             }
 
-            //if (Win32Api.GetActiveWindowProductName() != "AoEDEAlarm") return;
             PositionSettingForm f = new PositionSettingForm();
             f.TopMost = true;
             f.Show();
 
         }
 
-        private static void Item1_Click(object sender, EventArgs e) {
+        /// <summary>
+        /// 遊休農民数画像マッチング用
+        /// </summary>
+        /// <param name="uiScale"></param>
+        /// <returns></returns>
+        public static Mat[] GetNotWorkingImageArray(int uiScale) {
 
-            try {
-                GlobalValues.AlarmTokenSource?.Cancel();
-            } catch (Exception) {
-            }
-
-            ////最前面
-            //MessageBox.Show(text: $"アプリケーションを終了します。"
-            //    , caption: "AoEDEAlarm"
-            //    , buttons: MessageBoxButtons.OK
-            //    , icon: MessageBoxIcon.Information
-            //    , defaultButton: MessageBoxDefaultButton.Button1
-            //    , options: MessageBoxOptions.DefaultDesktopOnly
-            //    );
-
-            Application.Exit();
-
-        }
-
-        private static void Item2_Click(object sender, EventArgs e) {
-            if (GlobalValues.IsRunning) {
-                MessageBox.Show(text: $"監視処理を終了する必要があります。"
-                    , caption: "AoEDEAlarm"
-                    , buttons: MessageBoxButtons.OK
-                    , icon: MessageBoxIcon.Error
-                    , defaultButton: MessageBoxDefaultButton.Button1
-                    , options: MessageBoxOptions.DefaultDesktopOnly
-                    );
-                return;
-
-            }
-
-            FinishHotkeys();
-            HotkeySettingForm f = new HotkeySettingForm();
-            f.TopMost = true;
-            f.ShowDialog();
-            StartHotkeys();
-
-        }
-
-        private static void Item3_Click(object sender, EventArgs e) {
-            System.Diagnostics.Process.Start("file://" + ConstValues.HelpFileName);
-        }
-
-        private static Mat[] GetNotWorkingImageArray(double scale) {
+            double double_scale= (double)uiScale / 100d;
             string[] files = System.IO.Directory.GetFiles(ConstValues.NotWorkingImagePath, "*", System.IO.SearchOption.TopDirectoryOnly);
             Mat[] notWorkingImageArray = new Mat[files.Length];
             for (int i = 0; i < files.Length; i++) {
                 using (Mat mat_original = new Mat(files[i], ImreadModes.Unchanged)) {
-                    using (Mat mat_rotation = Cv2.GetRotationMatrix2D(new Point2f(0, 0), 0d, scale)) {
-                        //using (Mat mat_affined = new Mat()) {
-                        //    Cv2.WarpAffine(mat_original, mat_affined, mat_rotation, new OpenCvSharp.Size((double)mat_original.Width * scale, (double)mat_original.Height * scale));
-                        //    int idx;
-                        //    bool rtn = int.TryParse(Path.GetFileNameWithoutExtension(files[i]), out idx);
-                        //    if (rtn) {
-                        //        NotWorkingImageArray[idx] = mat_affined;
-                        //    }
-                        //}
-
+                    using (Mat mat_rotation = Cv2.GetRotationMatrix2D(new Point2f(0, 0), 0d, double_scale)) {
                         Mat mat_affined = new Mat();
-                        Cv2.WarpAffine(mat_original, mat_affined, mat_rotation, new OpenCvSharp.Size((double)mat_original.Width * scale, (double)mat_original.Height * scale));
+                        Cv2.WarpAffine(mat_original, mat_affined, mat_rotation, new OpenCvSharp.Size((double)mat_original.Width * double_scale, (double)mat_original.Height * double_scale));
                         int idx;
                         bool rtn = int.TryParse(Path.GetFileNameWithoutExtension(files[i]), out idx);
                         if (rtn) {
@@ -401,10 +371,14 @@ namespace AoEDEAlarm {
             return notWorkingImageArray;
         }
 
-        private static double GetScale() {
+        /// <summary>
+        /// ＵＩスケール取得用
+        /// </summary>
+        /// <returns></returns>
+        public static int GetScale() {
 
             double max_value = 0;
-            double max_scalse = 0;
+            int ret_i = 100;
 
             Rectangle rect = Screen.PrimaryScreen.Bounds;
             using (Bitmap bmp = new Bitmap(rect.Width, rect.Height, PixelFormat.Format32bppArgb)) {
@@ -424,7 +398,8 @@ namespace AoEDEAlarm {
                                     double v = OpenCvUtil.FindImage(mat_full_screen, mat_affined, 0.7d);
                                     if (v > max_value) {
                                         max_value = v;
-                                        max_scalse = scale;
+                                        //max_scalse = scale;
+                                        ret_i = i;
                                     }
                                 }
                             }
@@ -432,9 +407,35 @@ namespace AoEDEAlarm {
                     }
                 }
             }
-            return max_scalse;
+            return ret_i;
         }
 
+        /// <summary>
+        /// 半透明フォーム上の右クリックメニュー
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private static void Console_ContextMenuClick(object sender, TransparentMessage.ContextMenuClickedEventArgs e) {
+            if (e.contextMenuItem == TransparentMessage.ContextMenuItems.MiscellaneousSettings) {
+                MiscellaneousSettingsForm f = new MiscellaneousSettingsForm();
+                f.ShowDialog();
 
+            } else if (e.contextMenuItem == TransparentMessage.ContextMenuItems.StartMonitoring) {
+                Program.StartMonitoring();
+
+            } else if (e.contextMenuItem == TransparentMessage.ContextMenuItems.StopMonitoring) {
+                Program.StopMonitoring();
+
+            } else if (e.contextMenuItem == TransparentMessage.ContextMenuItems.ShowPositionSettingForm) {
+                Program.ShowPositionSettingForm();
+
+            } else if (e.contextMenuItem == TransparentMessage.ContextMenuItems.HotkeySetting) {
+                Program.ShowHotkeySettingForm();
+
+            } else if (e.contextMenuItem == TransparentMessage.ContextMenuItems.ExitProgram) {
+                GlobalValues.Console.Finish();
+
+            }
+        }
     }
 }

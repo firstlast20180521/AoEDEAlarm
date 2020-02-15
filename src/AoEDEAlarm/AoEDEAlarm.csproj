@@ -95,11 +95,11 @@
       <DependentUpon>TransparentForm.cs</DependentUpon>
     </Compile>
     <Compile Include="TransparentMessage.cs" />
-    <Compile Include="VolumeAdjustForm.cs">
+    <Compile Include="MiscellaneousSettingsForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="VolumeAdjustForm.Designer.cs">
-      <DependentUpon>VolumeAdjustForm.cs</DependentUpon>
+    <Compile Include="MiscellaneousSettingsForm.Designer.cs">
+      <DependentUpon>MiscellaneousSettingsForm.cs</DependentUpon>
     </Compile>
     <Compile Include="XmlUtilityClass.cs" />
     <Compile Include="OpenCvUtil.cs" />
@@ -157,8 +157,8 @@
     <EmbeddedResource Include="TransparentForm.resx">
       <DependentUpon>TransparentForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="VolumeAdjustForm.resx">
-      <DependentUpon>VolumeAdjustForm.cs</DependentUpon>
+    <EmbeddedResource Include="MiscellaneousSettingsForm.resx">
+      <DependentUpon>MiscellaneousSettingsForm.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

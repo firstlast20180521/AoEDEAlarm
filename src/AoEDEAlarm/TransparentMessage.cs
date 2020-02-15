@@ -15,6 +15,9 @@ namespace AoEDEAlarm {
         private Point _mousePoint;
         private MouseMoveMode _mouseMoveMode;
         private Size _formSize;
+        private const double _MaximumOpacity= 0.7d;
+        private const double _MidiumOpacity = 0.5d;
+        private const double _MinimumOpacity = 0.3d;
 
         private enum MouseMoveMode {
             Size,
@@ -37,10 +40,11 @@ namespace AoEDEAlarm {
         public event ClickHandler ContextMenuClick;
 
         public enum ContextMenuItems {
-            AdjustVolume,
+            MiscellaneousSettings,
             StartMonitoring,
             StopMonitoring,
             ShowPositionSettingForm,
+            HotkeySetting,
             ExitProgram,
         }
         public class ContextMenuClickedEventArgs : EventArgs {
@@ -59,16 +63,13 @@ namespace AoEDEAlarm {
         private MenuItem _mi_StartMonitoring = new MenuItem();
         private MenuItem _mi_StopMonitoring = new MenuItem();
         private MenuItem _mi_ShowPositionSettingForm = new MenuItem();
+        private MenuItem _mi_ShowHotkeySettingForm = new MenuItem();
         private MenuItem _mi_ExitProgram = new MenuItem();
 
         private List<AlarmMessageClass> _messageList { get; set; }
 
         public TransparentMessage() {
             _messageList = new List<AlarmMessageClass>();
-
-            _mi_AdjustVolume.Text = "音量調節";
-            _mi_AdjustVolume.Click += _mi_AdjustVolume_Click;
-            _cm.MenuItems.Add(_mi_AdjustVolume);
 
             _mi_StartMonitoring.Text = "監視開始";
             _mi_StartMonitoring.Click += _mi_StartMonitoring_Click;
@@ -78,9 +79,17 @@ namespace AoEDEAlarm {
             _mi_StopMonitoring.Click += _mi_StopMonitoring_Click;
             _cm.MenuItems.Add(_mi_StopMonitoring);
 
+            _mi_AdjustVolume.Text = "各種設定";
+            _mi_AdjustVolume.Click += _mi_AdjustVolume_Click;
+            _cm.MenuItems.Add(_mi_AdjustVolume);
+
             _mi_ShowPositionSettingForm.Text = "位置設定";
             _mi_ShowPositionSettingForm.Click += _mi_ShowPositionSettingForm_Click;
             _cm.MenuItems.Add(_mi_ShowPositionSettingForm);
+
+            _mi_ShowHotkeySettingForm.Text = "ホットキー設定";
+            _mi_ShowHotkeySettingForm.Click += _mi_ShowHotkeySettingForm_Click; ;
+            _cm.MenuItems.Add(_mi_ShowHotkeySettingForm);
 
             _mi_ExitProgram.Text = "アプリケーション終了";
             _mi_ExitProgram.Click += _mi_ExitProgram_Click;
@@ -118,10 +127,10 @@ namespace AoEDEAlarm {
         }
 
         private void _console_DoubleClick(object sender, EventArgs e) {
-            if (_console.Opacity > 0.3d) {
-                _console.Opacity = 0.1d;
+            if (_console.Opacity >= _MidiumOpacity) {
+                _console.Opacity = _MinimumOpacity;
             } else {
-                _console.Opacity = 0.9d;
+                _console.Opacity = _MaximumOpacity;
             }
         }
 
@@ -196,7 +205,7 @@ namespace AoEDEAlarm {
             _console.AutoSizeMode = AutoSizeMode.GrowOnly;
             //_console.BackColor = SystemColors.Control;
             _console.label1.Enabled = false;
-            _console.Opacity = 0.9d;
+            _console.Opacity = _MaximumOpacity;
         }
 
         private void _console_Deactivate(object sender, EventArgs e) {
@@ -205,7 +214,7 @@ namespace AoEDEAlarm {
             _console.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             //_console.BackColor = SystemColors.Control;
             _console.label1.Enabled = true;
-            _console.Opacity = 0.5d;
+            _console.Opacity = _MinimumOpacity;
         }
 
         public void Add(string message) {
@@ -224,7 +233,7 @@ namespace AoEDEAlarm {
             }
             _console.label1.Text = sb.ToString();
             _console.label1.Enabled = true;
-            _console.Opacity = 0.5;
+            _console.Opacity = _MinimumOpacity;
 
         }
 
@@ -235,7 +244,7 @@ namespace AoEDEAlarm {
             //末尾にメッセージを追加する。
             //_BackData.Add(new BackData() {TimeStump= DateTime.Now, Message= message });
 
-            _console.Opacity = 0.5;
+            //_console.Opacity = _MinimumOpacity;
             Task.Run(async () => {
                 while (!token.IsCancellationRequested) {
                     _console.Invoke((MethodInvoker)delegate {
@@ -250,7 +259,7 @@ namespace AoEDEAlarm {
                         _console.label1.Text = sb.ToString();
                         if (sb.Length > 0) {
                             //不透明度
-                            _console.Opacity = 0.5d;
+                            _console.Opacity = _MidiumOpacity;
                         }
                     });
 
@@ -275,7 +284,7 @@ namespace AoEDEAlarm {
         }
 
         private void _mi_AdjustVolume_Click(object sender, EventArgs e) {
-            ContextMenuClick(sender, new ContextMenuClickedEventArgs() { contextMenuItem = ContextMenuItems.AdjustVolume });
+            ContextMenuClick(sender, new ContextMenuClickedEventArgs() { contextMenuItem = ContextMenuItems.MiscellaneousSettings });
         }
         private void _mi_StartMonitoring_Click(object sender, EventArgs e) {
             ContextMenuClick(sender, new ContextMenuClickedEventArgs() { contextMenuItem = ContextMenuItems.StartMonitoring });
@@ -285,6 +294,9 @@ namespace AoEDEAlarm {
         }
         private void _mi_ShowPositionSettingForm_Click(object sender, EventArgs e) {
             ContextMenuClick(sender, new ContextMenuClickedEventArgs() { contextMenuItem = ContextMenuItems.ShowPositionSettingForm });
+        }
+        private void _mi_ShowHotkeySettingForm_Click(object sender, EventArgs e) {
+            ContextMenuClick(sender, new ContextMenuClickedEventArgs() { contextMenuItem = ContextMenuItems.HotkeySetting });
         }
         private void _mi_ExitProgram_Click(object sender, EventArgs e) {
             ContextMenuClick(sender, new ContextMenuClickedEventArgs() { contextMenuItem = ContextMenuItems.ExitProgram });

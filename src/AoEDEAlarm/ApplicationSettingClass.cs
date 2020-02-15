@@ -4,6 +4,7 @@ namespace AoEDEAlarm {
     public class ApplicationSettingClass {
         public int CheckInterval { get; set; }
         public int MasterVolume { get; set; }
+        public int UiScale { get; set; }
 
         public int Hotkey_Run { get; set; }
         public int Hotkey_Stop { get; set; }
@@ -28,6 +29,7 @@ namespace AoEDEAlarm {
         public ApplicationSettingClass() {
             CheckInterval = 5000;
             MasterVolume = 100;
+            UiScale = 100;
             Hotkey_Run = (int)(Keys.R | Keys.Control | Keys.Shift);
             Hotkey_Stop = (int)(Keys.S | Keys.Control | Keys.Shift);
             Hotkey_Customise = (int)(Keys.C | Keys.Control | Keys.Shift);

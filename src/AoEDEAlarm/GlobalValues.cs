@@ -24,7 +24,7 @@ namespace AoEDEAlarm {
         public static bool IsRunning;
       //public static List<AlarmMessageClass> AlarmMessageList;
         public static Mat[] NotWorkingImageArray;
-        public static double Scale;
+      //public static double Scale;
         public static TransparentMessage Console;
 
         static GlobalValues() {
