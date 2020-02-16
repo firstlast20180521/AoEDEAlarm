@@ -72,6 +72,15 @@ namespace AoEDEAlarm {
             }
         }
 
+        internal static Point Enlarge(Point location, int uiScale) {
+            double v = (double)uiScale / 100d;
+            return new OpenCvSharp.Point((double)location.X * v, (double)location.Y * v);
+        }
+
+        internal static Size Enlarge(Size size, int uiScale) {
+            double v = (double)uiScale / 100d;
+            return new OpenCvSharp.Size((double)size.Width * v, (double)size.Height * v);
+        }
 
     }
 }

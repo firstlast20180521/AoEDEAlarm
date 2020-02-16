@@ -137,7 +137,7 @@ namespace AoEDEAlarm {
             GlobalValues.ApplicationSetting.Hotkey_Customise = (int)KeysArr[2];
 
             XmlUtilityClass<ApplicationSettingClass>.SaveXml(GlobalValues.ApplicationSetting, ConstValues.ApplicationSettingFileName);
-            XmlUtilityClass<SoundSettingClass>.SaveXml(GlobalValues.SoundSetting, ConstValues.SoundSettingFileName);
+            XmlUtilityClass<AlarmSettingClass>.SaveXml(GlobalValues.AlarmSetting, ConstValues.AlarmSettingFileName);
 
             MessageBox.Show(text: "位置を保存しました。"
                 , caption: "画像位置設定"

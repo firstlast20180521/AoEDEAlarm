@@ -87,7 +87,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="SoundSettingClass.cs" />
+    <Compile Include="AlarmSettingClass.cs" />
     <Compile Include="TransparentForm.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -18,10 +18,8 @@ namespace AoEDEAlarm {
         public static string NotWorkingImagePath { get; set; }
 
         public static string ApplicationSettingFileName { get; set; }
-        public static string SoundSettingFileName { get; set; }
+        public static string AlarmSettingFileName { get; set; }
         public static string HelpFileName { get; set; }
-        public static string DebugBitmapFileName1 { get; set; }
-        public static string DebugBitmapFileName2 { get; set; }
         public static string RulerImageFileName { get; set; }
 
         static ConstValues() {
@@ -40,10 +38,8 @@ namespace AoEDEAlarm {
             NotWorkingImagePath = Path.Combine(executing_directory_name, "image/NotWorking");
 
             ApplicationSettingFileName = Path.Combine(executing_directory_name, @"application_setting.xml");
-            SoundSettingFileName = Path.Combine(executing_directory_name, @"sound_setting.xml");
+            AlarmSettingFileName = Path.Combine(executing_directory_name, @"alarm_setting.xml");
             HelpFileName = Path.Combine(DocumentPath, @"Help.htm");
-            DebugBitmapFileName1 = Path.Combine(WorkDirectoryPath, @"xxx1.bmp");
-            DebugBitmapFileName2 = Path.Combine(WorkDirectoryPath, @"xxx2.bmp");
             RulerImageFileName = Path.Combine(ImagePath, @"Ａ部分画像_Mat形式_ＵＩ１００パーセント.png");
 
         }

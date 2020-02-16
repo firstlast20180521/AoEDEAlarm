@@ -25,34 +25,11 @@ namespace AoEDEAlarm {
 
         }
 
-        private void Label1_MouseDown(object sender, MouseEventArgs e) {
-        }
-
-        private void Label1_MouseMove(object sender, MouseEventArgs e) {
-        }
-
-        private void TransparentForm_DoubleClick(object sender, EventArgs e) {
-
-        }
-
         private void TransparentForm_FormClosing(object sender, FormClosingEventArgs e) {
+            Properties.Settings.Default.FormPosition = this.Location;
+            Properties.Settings.Default.Save();
 
         }
 
-        private void TransparentForm_Activated(object sender, EventArgs e) {
-
-        }
-
-        private void TransparentForm_Deactivate(object sender, EventArgs e) {
-
-        }
-
-        private void pictureBox1_Click(object sender, EventArgs e) {
-            MessageBox.Show("aaaaaad");
-        }
-
-        private void label1_Click(object sender, EventArgs e) {
-
-        }
     }
 }

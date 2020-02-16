@@ -15,34 +15,22 @@ using System.Windows.Forms;
 namespace AoEDEAlarm {
     public static class GlobalValues {
         public static ApplicationSettingClass ApplicationSetting;
-        public static SoundSettingClass SoundSetting;
+        public static AlarmSettingClass AlarmSetting;
         public static HotKey Hotkey_Run;
         public static HotKey Hotkey_Stop;
         public static HotKey Hotkey_Customise;
         public static CancellationTokenSource AlarmTokenSource = null;
-      //public static TransparentForm Console;
         public static bool IsRunning;
-      //public static List<AlarmMessageClass> AlarmMessageList;
         public static Mat[] NotWorkingImageArray;
-      //public static double Scale;
         public static TransparentMessage Console;
 
         static GlobalValues() {
             ApplicationSetting = XmlUtilityClass<ApplicationSettingClass>.LoadXml(ConstValues.ApplicationSettingFileName);
-            SoundSetting = XmlUtilityClass<SoundSettingClass>.LoadXml(ConstValues.SoundSettingFileName);
+            AlarmSetting = XmlUtilityClass<AlarmSettingClass>.LoadXml(ConstValues.AlarmSettingFileName);
             Hotkey_Run = new HotKey();
             Hotkey_Stop = new HotKey();
             Hotkey_Customise = new HotKey();
             Console = new TransparentMessage();
-           
         }
-
-
-        //public static void AddMessage(string message) {
-        //    //末尾にメッセージを追加する。
-        //    AlarmMessageList.Add(new AlarmMessageClass() { TimeStump = DateTime.Now, Message = message });
-        //}
-
-
     }
 }

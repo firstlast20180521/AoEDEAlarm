@@ -105,7 +105,7 @@
             this.KeyPreview = true;
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "HotkeySettingForm";
-            this.Text = "HotkeySettingForm";
+            this.Text = "ホットーキー設定";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.HotkeySettingForm_FormClosing);
             this.Load += new System.EventHandler(this.HotkeySettingForm_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.HotkeySettingForm_KeyDown);

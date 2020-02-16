@@ -15,9 +15,73 @@ namespace AoEDEAlarm {
 
         private MouseEventArgs sPos;
         private MouseEventArgs ePos;
+        ApplicationSettingClass _ps;
+        double _k;
 
         public PositionSettingForm() {
             InitializeComponent();
+
+            _k = (double)GlobalValues.ApplicationSetting.UiScale / 100d;
+
+            _ps = new ApplicationSettingClass {
+                Wood = new ApplicationSettingClass.Rectangle {
+                    X = (int)((double)GlobalValues.ApplicationSetting.Wood.X * _k),
+                    Y = (int)((double)GlobalValues.ApplicationSetting.Wood.Y * _k),
+                    Width = (int)((double)GlobalValues.ApplicationSetting.Wood.Width * _k),
+                    Height = (int)((double)GlobalValues.ApplicationSetting.Wood.Height * _k),
+                },
+
+                Food = new ApplicationSettingClass.Rectangle {
+                    X = (int)((double)GlobalValues.ApplicationSetting.Food.X * _k),
+                    Y = (int)((double)GlobalValues.ApplicationSetting.Food.Y * _k),
+                    Width = (int)((double)GlobalValues.ApplicationSetting.Food.Width * _k),
+                    Height = (int)((double)GlobalValues.ApplicationSetting.Food.Height * _k),
+                },
+
+                Gold = new ApplicationSettingClass.Rectangle {
+                    X = (int)((double)GlobalValues.ApplicationSetting.Gold.X * _k),
+                    Y = (int)((double)GlobalValues.ApplicationSetting.Gold.Y * _k),
+                    Width = (int)((double)GlobalValues.ApplicationSetting.Gold.Width * _k),
+                    Height = (int)((double)GlobalValues.ApplicationSetting.Gold.Height * _k),
+                },
+
+                Stone = new ApplicationSettingClass.Rectangle {
+                    X = (int)((double)GlobalValues.ApplicationSetting.Stone.X * _k),
+                    Y = (int)((double)GlobalValues.ApplicationSetting.Stone.Y * _k),
+                    Width = (int)((double)GlobalValues.ApplicationSetting.Stone.Width * _k),
+                    Height = (int)((double)GlobalValues.ApplicationSetting.Stone.Height * _k),
+                },
+
+                Housing = new ApplicationSettingClass.Rectangle {
+                    X = (int)((double)GlobalValues.ApplicationSetting.Housing.X * _k),
+                    Y = (int)((double)GlobalValues.ApplicationSetting.Housing.Y * _k),
+                    Width = (int)((double)GlobalValues.ApplicationSetting.Housing.Width * _k),
+                    Height = (int)((double)GlobalValues.ApplicationSetting.Housing.Height * _k),
+                },
+
+                NotWorking = new ApplicationSettingClass.Rectangle {
+                    X = (int)((double)GlobalValues.ApplicationSetting.NotWorking.X * _k),
+                    Y = (int)((double)GlobalValues.ApplicationSetting.NotWorking.Y * _k),
+                    Width = (int)((double)GlobalValues.ApplicationSetting.NotWorking.Width * _k),
+                    Height = (int)((double)GlobalValues.ApplicationSetting.NotWorking.Height * _k),
+                },
+
+                Players = new ApplicationSettingClass.Rectangle {
+                    X = (int)((double)GlobalValues.ApplicationSetting.Players.X * _k),
+                    Y = (int)((double)GlobalValues.ApplicationSetting.Players.Y * _k),
+                    Width = (int)((double)GlobalValues.ApplicationSetting.Players.Width * _k),
+                    Height = (int)((double)GlobalValues.ApplicationSetting.Players.Height * _k),
+                },
+
+                MiniMap = new ApplicationSettingClass.Rectangle {
+                    X = (int)((double)GlobalValues.ApplicationSetting.MiniMap.X * _k),
+                    Y = (int)((double)GlobalValues.ApplicationSetting.MiniMap.Y * _k),
+                    Width = (int)((double)GlobalValues.ApplicationSetting.MiniMap.Width * _k),
+                    Height = (int)((double)GlobalValues.ApplicationSetting.MiniMap.Height * _k),
+                },
+
+            };
+
         }
 
         private enum PositionKind {
@@ -34,64 +98,6 @@ namespace AoEDEAlarm {
         private RadioButton[] radioButtons = new RadioButton[Enum.GetNames(typeof(PositionKind)).Length];
         private PictureBox[] pictureBoxes = new PictureBox[Enum.GetNames(typeof(PositionKind)).Length];
 
-        ApplicationSettingClass _ps = new ApplicationSettingClass {
-            Wood = new ApplicationSettingClass.Rectangle {
-                X = GlobalValues.ApplicationSetting.Wood.X,
-                Y = GlobalValues.ApplicationSetting.Wood.Y,
-                Width = GlobalValues.ApplicationSetting.Wood.Width,
-                Height = GlobalValues.ApplicationSetting.Wood.Height,
-            },
-
-            Food = new ApplicationSettingClass.Rectangle {
-                X = GlobalValues.ApplicationSetting.Food.X,
-                Y = GlobalValues.ApplicationSetting.Food.Y,
-                Width = GlobalValues.ApplicationSetting.Food.Width,
-                Height = GlobalValues.ApplicationSetting.Food.Height,
-            },
-
-            Gold = new ApplicationSettingClass.Rectangle {
-                X = GlobalValues.ApplicationSetting.Gold.X,
-                Y = GlobalValues.ApplicationSetting.Gold.Y,
-                Width = GlobalValues.ApplicationSetting.Gold.Width,
-                Height = GlobalValues.ApplicationSetting.Gold.Height,
-            },
-
-            Stone = new ApplicationSettingClass.Rectangle {
-                X = GlobalValues.ApplicationSetting.Stone.X,
-                Y = GlobalValues.ApplicationSetting.Stone.Y,
-                Width = GlobalValues.ApplicationSetting.Stone.Width,
-                Height = GlobalValues.ApplicationSetting.Stone.Height,
-            },
-
-            Housing = new ApplicationSettingClass.Rectangle {
-                X = GlobalValues.ApplicationSetting.Housing.X,
-                Y = GlobalValues.ApplicationSetting.Housing.Y,
-                Width = GlobalValues.ApplicationSetting.Housing.Width,
-                Height = GlobalValues.ApplicationSetting.Housing.Height,
-            },
-
-            NotWorking = new ApplicationSettingClass.Rectangle {
-                X = GlobalValues.ApplicationSetting.NotWorking.X,
-                Y = GlobalValues.ApplicationSetting.NotWorking.Y,
-                Width = GlobalValues.ApplicationSetting.NotWorking.Width,
-                Height = GlobalValues.ApplicationSetting.NotWorking.Height,
-            },
-
-            Players = new ApplicationSettingClass.Rectangle {
-                X = GlobalValues.ApplicationSetting.Players.X,
-                Y = GlobalValues.ApplicationSetting.Players.Y,
-                Width = GlobalValues.ApplicationSetting.Players.Width,
-                Height = GlobalValues.ApplicationSetting.Players.Height,
-            },
-
-            MiniMap = new ApplicationSettingClass.Rectangle {
-                X = GlobalValues.ApplicationSetting.MiniMap.X,
-                Y = GlobalValues.ApplicationSetting.MiniMap.Y,
-                Width = GlobalValues.ApplicationSetting.MiniMap.Width,
-                Height = GlobalValues.ApplicationSetting.MiniMap.Height,
-            },
-
-        };
 
 
 
@@ -302,7 +308,8 @@ namespace AoEDEAlarm {
 
         private void button1_Click(object sender, EventArgs e) {
 
-            SaveData();
+            bool rtn = SaveData();
+            if (!rtn) return;
             this.Close();
         }
 
@@ -312,7 +319,9 @@ namespace AoEDEAlarm {
         }
 
         private void button3_Click(object sender, EventArgs e) {
-            SaveData();
+
+            bool rtn = SaveData();
+            if (!rtn) return;
 
             MessageBox.Show(text: "位置を保存しました。"
                 , caption: "画像位置設定"
@@ -321,32 +330,40 @@ namespace AoEDEAlarm {
                 , defaultButton: MessageBoxDefaultButton.Button1
                 , options: MessageBoxOptions.DefaultDesktopOnly
                 );
-
-
         }
 
-        private void SaveData() {
-            //10,23 
+        private bool SaveData() {
+            //if (GlobalValues.ApplicationSetting.UiScale != 100) {
+            //    MessageBox.Show(text: "ＵＩスケールが１００％以外です。当アプリケーションの各種設定、及びゲームのＵＩスケールを１００％にした上で位置設定を行ってください。"
+            //        , caption: "画像位置設定"
+            //        , buttons: MessageBoxButtons.OK
+            //        , icon: MessageBoxIcon.Error
+            //        , defaultButton: MessageBoxDefaultButton.Button1
+            //        , options: MessageBoxOptions.DefaultDesktopOnly
+            //        );
+            //    return false;
+            //}
+
             if (_ps.NotWorking.Width < 23) {
-                MessageBox.Show(text: "遊び農民の幅が足りません。"
+                MessageBox.Show(text: "遊休農民の幅が足りません。"
                     , caption: "画像位置設定"
                     , buttons: MessageBoxButtons.OK
                     , icon: MessageBoxIcon.Error
                     , defaultButton: MessageBoxDefaultButton.Button1
                     , options: MessageBoxOptions.DefaultDesktopOnly
                     );
-                return;
+                return false;
             }
 
             if (_ps.NotWorking.Height < 10) {
-                MessageBox.Show(text: "遊び農民の高さが足りません。"
+                MessageBox.Show(text: "遊休農民の高さが足りません。"
                     , caption: "画像位置設定"
                     , buttons: MessageBoxButtons.OK
                     , icon: MessageBoxIcon.Error
                     , defaultButton: MessageBoxDefaultButton.Button1
                     , options: MessageBoxOptions.DefaultDesktopOnly
                     );
-                return;
+                return false;
             }
 
             GlobalValues.ApplicationSetting.Wood.X = _ps.Wood.X;
@@ -391,10 +408,11 @@ namespace AoEDEAlarm {
 
             XmlUtilityClass<ApplicationSettingClass>.SaveXml(GlobalValues.ApplicationSetting, ConstValues.ApplicationSettingFileName);
 
+            return true;
         }
 
         private void rdoX_CheckedChanged(object sender, EventArgs e) {
-            
+
             DrawWholePictures();
 
 

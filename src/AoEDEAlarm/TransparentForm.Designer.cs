@@ -38,7 +38,6 @@
             this.label1.Size = new System.Drawing.Size(93, 20);
             this.label1.TabIndex = 0;
             this.label1.Text = "label1あああ";
-            this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // TransparentForm
             // 
@@ -58,11 +57,8 @@
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
-            this.Activated += new System.EventHandler(this.TransparentForm_Activated);
-            this.Deactivate += new System.EventHandler(this.TransparentForm_Deactivate);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.TransparentForm_FormClosing);
             this.Load += new System.EventHandler(this.TransparentForm_Load);
-            this.DoubleClick += new System.EventHandler(this.TransparentForm_DoubleClick);
             this.ResumeLayout(false);
             this.PerformLayout();
 

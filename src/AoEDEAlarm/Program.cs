@@ -53,7 +53,7 @@ namespace AoEDEAlarm {
                     Application.SetCompatibleTextRenderingDefault(false);
 
                     GlobalValues.ApplicationSetting = XmlUtilityClass<ApplicationSettingClass>.LoadXml(ConstValues.ApplicationSettingFileName);
-                    GlobalValues.SoundSetting = XmlUtilityClass<SoundSettingClass>.LoadXml(ConstValues.SoundSettingFileName);
+                    GlobalValues.AlarmSetting = XmlUtilityClass<AlarmSettingClass>.LoadXml(ConstValues.AlarmSettingFileName);
 
                     StartHotkeys();
                     NotifyIcon ni = SetNotifyIcon();
@@ -73,7 +73,7 @@ namespace AoEDEAlarm {
 
                     ni.Dispose();
                     XmlUtilityClass<ApplicationSettingClass>.SaveXml(GlobalValues.ApplicationSetting, ConstValues.ApplicationSettingFileName);
-                    XmlUtilityClass<SoundSettingClass>.SaveXml(GlobalValues.SoundSetting, ConstValues.SoundSettingFileName);
+                    XmlUtilityClass<AlarmSettingClass>.SaveXml(GlobalValues.AlarmSetting, ConstValues.AlarmSettingFileName);
 
                 } catch (Exception ex) {
                     // アプリケーション例外処理
@@ -127,7 +127,7 @@ namespace AoEDEAlarm {
         }
 
         /// <summary>
-        /// ホットキー押下時処理（設定画面表示）
+        /// ホットキー押下時処理（位置設定）
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -136,16 +136,7 @@ namespace AoEDEAlarm {
         }
 
         /// <summary>
-        /// 右クリックメニュー（監視開始）
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private static void TsmItemFinishMonitoring_Click(object sender, EventArgs e) {
-            StopMonitoring();
-        }
-
-        /// <summary>
-        /// 右クリックメニュー（監視終了）
+        /// タスクバー右クリックメニュー（監視開始）
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -154,7 +145,44 @@ namespace AoEDEAlarm {
         }
 
         /// <summary>
-        /// 右クリックメニュー（設定画面表示）
+        /// タスクバー右クリックメニュー（監視終了）
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private static void TsmItemStopMonitoring_Click(object sender, EventArgs e) {
+            StopMonitoring();
+        }
+
+        /// <summary>
+        /// タスクバー右クリックメニュー（コンソール画面表示）
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private static void TsmItemShowConsole_Click(object sender, EventArgs e) {
+            GlobalValues.Console.Show();
+            GlobalValues.Console.Start();
+        }
+
+        /// <summary>
+        /// タスクバー右クリックメニュー（コンソール画面を閉じる）
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private static void TsmItemCloseConsole_Click(object sender, EventArgs e) {
+            GlobalValues.Console.Close();
+        }
+
+        /// <summary>
+        /// タスクバー右クリックメニュー（位置設定）
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private static void TsmItemPositionSetting_Click(object sender, EventArgs e) {
+            ShowPositionSettingForm();
+        }
+
+        /// <summary>
+        /// タスクバー右クリックメニュー（ホットキー設定）
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -163,7 +191,7 @@ namespace AoEDEAlarm {
         }
 
         /// <summary>
-        /// 右クリックメニュー（ヘルプ画面）
+        /// タスクバー右クリックメニュー（ヘルプ画面）
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -172,7 +200,7 @@ namespace AoEDEAlarm {
         }
 
         /// <summary>
-        /// 右クリックメニュー（アプリケーション終了）
+        /// タスクバー右クリックメニュー（アプリケーション終了）
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -183,6 +211,7 @@ namespace AoEDEAlarm {
             } catch (Exception) {
             }
 
+            GlobalValues.Console.Close();
             Application.Exit();
         }
 
@@ -206,10 +235,28 @@ namespace AoEDEAlarm {
                 Name = "監視開始ToolStripMenuItem",
             };
 
-            ToolStripMenuItem TsmItemFinishMonitoring = new ToolStripMenuItem() {
+            ToolStripMenuItem TsmItemStopMonitoring = new ToolStripMenuItem() {
                 Text = "監視終了",
                 Image = null,
                 Name = "監視終了ToolStripMenuItem",
+            };
+
+            ToolStripMenuItem TsmItemShowConsole = new ToolStripMenuItem() {
+                Text = "コンソール画面表示",
+                Image = null,
+                Name = "コンソール画面表示ToolStripMenuItem",
+            };
+
+            ToolStripMenuItem TsmItemCloseConsole = new ToolStripMenuItem() {
+                Text = "コンソール画面を閉じる",
+                Image = null,
+                Name = "コンソール画面を閉じるToolStripMenuItem",
+            };
+
+            ToolStripMenuItem TsmItemPositionSetting = new ToolStripMenuItem() {
+                Text = "位置設定",
+                Image = null,
+                Name = "位置設定ToolStripMenuItem",
             };
 
             ToolStripMenuItem TsmItemShowHotkeySettingForm = new ToolStripMenuItem() {
@@ -231,14 +278,20 @@ namespace AoEDEAlarm {
             };
 
             cms.Items.Add(TsmItemStartMonitoring);
-            cms.Items.Add(TsmItemFinishMonitoring);
+            cms.Items.Add(TsmItemStopMonitoring);
+            cms.Items.Add(TsmItemShowConsole);
+            cms.Items.Add(TsmItemCloseConsole);
+            cms.Items.Add(TsmItemPositionSetting);
             cms.Items.Add(TsmItemShowHotkeySettingForm);
             cms.Items.Add(TsmItemHelp);
             cms.Items.Add(TsmItemExitApplication);
             ni.ContextMenuStrip = cms;
 
             TsmItemStartMonitoring.Click += TsmItemStartMonitoring_Click;
-            TsmItemFinishMonitoring.Click += TsmItemFinishMonitoring_Click;
+            TsmItemStopMonitoring.Click += TsmItemStopMonitoring_Click;
+            TsmItemShowConsole.Click += TsmItemShowConsole_Click;
+            TsmItemCloseConsole.Click += TsmItemCloseConsole_Click;
+            TsmItemPositionSetting.Click += TsmItemPositionSetting_Click;
             TsmItemShowHotkeySettingForm.Click += TsmItemHotkeySetting_Click;
             TsmItemHelp.Click += TsmItemHelp_Click;
             TsmItemExitApplication.Click += TsmItemExitApplication_Click;
@@ -339,6 +392,18 @@ namespace AoEDEAlarm {
 
             }
 
+            if (GlobalValues.ApplicationSetting.UiScale!=100) {
+                MessageBox.Show(text: $"UIスケールが100%以外です。各種設定画面で変更してください。"
+                    , caption: "AoEDEAlarm"
+                    , buttons: MessageBoxButtons.OK
+                    , icon: MessageBoxIcon.Error
+                    , defaultButton: MessageBoxDefaultButton.Button1
+                    , options: MessageBoxOptions.DefaultDesktopOnly
+                    );
+                return;
+
+            }
+
             PositionSettingForm f = new PositionSettingForm();
             f.TopMost = true;
             f.Show();
@@ -416,24 +481,33 @@ namespace AoEDEAlarm {
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private static void Console_ContextMenuClick(object sender, TransparentMessage.ContextMenuClickedEventArgs e) {
-            if (e.contextMenuItem == TransparentMessage.ContextMenuItems.MiscellaneousSettings) {
-                MiscellaneousSettingsForm f = new MiscellaneousSettingsForm();
-                f.ShowDialog();
-
-            } else if (e.contextMenuItem == TransparentMessage.ContextMenuItems.StartMonitoring) {
+            if (e.contextMenuItem == TransparentMessage.ContextMenuItems.StartMonitoring) {
                 Program.StartMonitoring();
 
             } else if (e.contextMenuItem == TransparentMessage.ContextMenuItems.StopMonitoring) {
                 Program.StopMonitoring();
 
+            } else if (e.contextMenuItem == TransparentMessage.ContextMenuItems.CloseConsole) {
+                GlobalValues.Console.Close();
+
+            } else if (e.contextMenuItem == TransparentMessage.ContextMenuItems.ShowMiscellaneousSettingsForm) {
+                MiscellaneousSettingsForm f = new MiscellaneousSettingsForm();
+                f.ShowDialog();
+
             } else if (e.contextMenuItem == TransparentMessage.ContextMenuItems.ShowPositionSettingForm) {
                 Program.ShowPositionSettingForm();
 
-            } else if (e.contextMenuItem == TransparentMessage.ContextMenuItems.HotkeySetting) {
+            } else if (e.contextMenuItem == TransparentMessage.ContextMenuItems.ShowHotkeySettingForm) {
                 Program.ShowHotkeySettingForm();
 
             } else if (e.contextMenuItem == TransparentMessage.ContextMenuItems.ExitProgram) {
-                GlobalValues.Console.Finish();
+                try {
+                    GlobalValues.AlarmTokenSource?.Cancel();
+                } catch (Exception) {
+                }
+
+                GlobalValues.Console.Close();
+                Application.Exit();
 
             }
         }

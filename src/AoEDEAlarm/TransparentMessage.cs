@@ -11,6 +11,9 @@ using System.Windows.Forms;
 
 namespace AoEDEAlarm {
     public class TransparentMessage {
+        public MonitorStatus Status { get; set; }
+        private CancellationTokenSource _tokenSource;
+
         private System.Windows.Forms.Control control1;
         private Point _mousePoint;
         private MouseMoveMode _mouseMoveMode;
@@ -18,6 +21,12 @@ namespace AoEDEAlarm {
         private const double _MaximumOpacity= 0.7d;
         private const double _MidiumOpacity = 0.5d;
         private const double _MinimumOpacity = 0.3d;
+
+        public enum MonitorStatus {
+            Inactive,
+            Shown,
+            Monitoring,
+        }
 
         private enum MouseMoveMode {
             Size,
@@ -40,11 +49,12 @@ namespace AoEDEAlarm {
         public event ClickHandler ContextMenuClick;
 
         public enum ContextMenuItems {
-            MiscellaneousSettings,
             StartMonitoring,
             StopMonitoring,
+            CloseConsole,
+            ShowMiscellaneousSettingsForm,
             ShowPositionSettingForm,
-            HotkeySetting,
+            ShowHotkeySettingForm,
             ExitProgram,
         }
         public class ContextMenuClickedEventArgs : EventArgs {
@@ -59,9 +69,10 @@ namespace AoEDEAlarm {
         private TransparentForm _console;
 
         private ContextMenu _cm = new ContextMenu();
-        private MenuItem _mi_AdjustVolume = new MenuItem();
+        private MenuItem _mi_ShowMiscellaneousSettingsForm = new MenuItem();
         private MenuItem _mi_StartMonitoring = new MenuItem();
         private MenuItem _mi_StopMonitoring = new MenuItem();
+        private MenuItem _mi_CloseConsole = new MenuItem();
         private MenuItem _mi_ShowPositionSettingForm = new MenuItem();
         private MenuItem _mi_ShowHotkeySettingForm = new MenuItem();
         private MenuItem _mi_ExitProgram = new MenuItem();
@@ -79,9 +90,13 @@ namespace AoEDEAlarm {
             _mi_StopMonitoring.Click += _mi_StopMonitoring_Click;
             _cm.MenuItems.Add(_mi_StopMonitoring);
 
-            _mi_AdjustVolume.Text = "各種設定";
-            _mi_AdjustVolume.Click += _mi_AdjustVolume_Click;
-            _cm.MenuItems.Add(_mi_AdjustVolume);
+            _mi_CloseConsole.Text = "画面非表示";
+            _mi_CloseConsole.Click += _mi_CloseConsole_Click; ;
+            _cm.MenuItems.Add(_mi_CloseConsole);
+
+            _mi_ShowMiscellaneousSettingsForm.Text = "各種設定";
+            _mi_ShowMiscellaneousSettingsForm.Click += _mi_ShowMiscellaneousSettingsForm_Click;
+            _cm.MenuItems.Add(_mi_ShowMiscellaneousSettingsForm);
 
             _mi_ShowPositionSettingForm.Text = "位置設定";
             _mi_ShowPositionSettingForm.Click += _mi_ShowPositionSettingForm_Click;
@@ -95,34 +110,7 @@ namespace AoEDEAlarm {
             _mi_ExitProgram.Click += _mi_ExitProgram_Click;
             _cm.MenuItems.Add(_mi_ExitProgram);
 
-            _console = new TransparentForm();
-            _console.KeyPreview = true;
-            _console.ShowIcon = false;
-            _console.ShowInTaskbar = false;
-            _console.AutoSize = true;
-            _console.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-
-            _console.MouseDown += _console_MouseDown;
-            _console.MouseMove += _console_MouseMove;
-            //_console.MouseUp += _console_MouseUp;  ;
-            _console.Activated += _console_Activated;
-            _console.Deactivate += _console_Deactivate;
-            _console.FormClosing += _console_FormClosing;
-            _console.DoubleClick += _console_DoubleClick;
-
-            _console.FormBorderStyle = FormBorderStyle.None;
-            _console.label1.Text = "";
-            //_console.label1.Enabled = false;
-            //_console..BackColor = SystemColors.Control;
-            //_console.label1.ForeColor = SystemColors.WindowText;
-
-
-            this.control1 = new System.Windows.Forms.Control();
-            this.control1.Location = new System.Drawing.Point(300, 0);
-            this.control1.Size = new System.Drawing.Size(0, 0);
-            //this.control1.AllowDrop = true;
-            //this.control1.BackColor = Color.Green;
-            _console.Controls.Add(this.control1);
+            Status = MonitorStatus.Inactive;
 
         }
 
@@ -179,49 +167,78 @@ namespace AoEDEAlarm {
 
 
         private void _console_FormClosing(object sender, FormClosingEventArgs e) {
-            if (e.CloseReason == CloseReason.ApplicationExitCall) return;
+            //Close();
 
-            //最前面
-            var rtn = MessageBox.Show(text: $"アプリケーションを終了してよろしいですか？"
-                , caption: "AoEDEAlarm"
-                , buttons: MessageBoxButtons.OKCancel
-                , icon: MessageBoxIcon.Information
-                , defaultButton: MessageBoxDefaultButton.Button1
-                , options: MessageBoxOptions.DefaultDesktopOnly
-                );
+            //if (e.CloseReason == CloseReason.ApplicationExitCall) return;
 
-            if (rtn == DialogResult.Cancel) {
-                e.Cancel = true;
-                return;
-            }
+            ////最前面
+            //var rtn = MessageBox.Show(text: $"アプリケーションを終了してよろしいですか？"
+            //    , caption: "AoEDEAlarm"
+            //    , buttons: MessageBoxButtons.OKCancel
+            //    , icon: MessageBoxIcon.Information
+            //    , defaultButton: MessageBoxDefaultButton.Button1
+            //    , options: MessageBoxOptions.DefaultDesktopOnly
+            //    );
 
-            Application.Exit();
+            //if (rtn == DialogResult.Cancel) {
+            //    e.Cancel = true;
+            //    return;
+            //}
+
+            //Application.Exit();
 
         }
 
         private void _console_Activated(object sender, EventArgs e) {
             //アラーム画面にフォーカスがあることに気が付かずに、ゲーム画面の操作を行わなないようにするための対策。
-            //_console.FormBorderStyle = FormBorderStyle.Fixed3D;
             _console.AutoSizeMode = AutoSizeMode.GrowOnly;
-            //_console.BackColor = SystemColors.Control;
             _console.label1.Enabled = false;
             _console.Opacity = _MaximumOpacity;
         }
 
         private void _console_Deactivate(object sender, EventArgs e) {
             //アラーム画面にフォーカスがあることに気が付かずに、ゲーム画面の操作を行わなないようにするための対策。
-            //_console.FormBorderStyle = FormBorderStyle.None;
             _console.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            //_console.BackColor = SystemColors.Control;
             _console.label1.Enabled = true;
             _console.Opacity = _MinimumOpacity;
         }
 
         public void Add(string message) {
+            if ( Status == MonitorStatus.Inactive) return;
             _messageList.Add(new AlarmMessageClass { Message = message, TimeStump = DateTime.Now });
         }
 
         public void Show() {
+
+            _console = new TransparentForm();
+            _console.KeyPreview = true;
+            _console.ShowIcon = false;
+            _console.ShowInTaskbar = false;
+            _console.AutoSize = true;
+            _console.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+
+            _console.MouseDown += _console_MouseDown;
+            _console.MouseMove += _console_MouseMove;
+            //_console.MouseUp += _console_MouseUp;  ;
+            _console.Activated += _console_Activated;
+            _console.Deactivate += _console_Deactivate;
+            _console.FormClosing += _console_FormClosing;
+            _console.DoubleClick += _console_DoubleClick;
+
+            _console.FormBorderStyle = FormBorderStyle.None;
+            _console.label1.Text = "";
+            //_console.label1.Enabled = false;
+            //_console..BackColor = SystemColors.Control;
+            //_console.label1.ForeColor = SystemColors.WindowText;
+
+
+            this.control1 = new System.Windows.Forms.Control();
+            this.control1.Location = new System.Drawing.Point(300, 0);
+            this.control1.Size = new System.Drawing.Size(0, 0);
+            //this.control1.AllowDrop = true;
+            //this.control1.BackColor = Color.Green;
+            _console.Controls.Add(this.control1);
+
             //最前面
             SetWindowPos(_console.Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
             _console.Show();
@@ -235,11 +252,19 @@ namespace AoEDEAlarm {
             _console.label1.Enabled = true;
             _console.Opacity = _MinimumOpacity;
 
+            Status = MonitorStatus.Shown;
+
+        }
+
+        public void Close() {
+            _tokenSource.Cancel();
+            _console.Close();
+            Status = MonitorStatus.Inactive;
         }
 
         public void Start() {
-            CancellationTokenSource tokenSource = new CancellationTokenSource();
-            CancellationToken token = tokenSource.Token;
+            _tokenSource = new CancellationTokenSource();
+            CancellationToken token = _tokenSource.Token;
 
             //末尾にメッセージを追加する。
             //_BackData.Add(new BackData() {TimeStump= DateTime.Now, Message= message });
@@ -248,6 +273,8 @@ namespace AoEDEAlarm {
             Task.Run(async () => {
                 while (!token.IsCancellationRequested) {
                     _console.Invoke((MethodInvoker)delegate {
+                        Status = MonitorStatus.Monitoring;
+
                         //古いメッセージは削除する。
                         _messageList.RemoveAll(x => (DateTime.Now - x.TimeStump > new TimeSpan(0, 0, 10)));
 
@@ -279,24 +306,29 @@ namespace AoEDEAlarm {
 
         }
 
-        public void Finish() {
-            _console.Close();
+        public void Stop() {
+            _tokenSource.Cancel();
+            Status = MonitorStatus.Shown;
+
         }
 
-        private void _mi_AdjustVolume_Click(object sender, EventArgs e) {
-            ContextMenuClick(sender, new ContextMenuClickedEventArgs() { contextMenuItem = ContextMenuItems.MiscellaneousSettings });
-        }
         private void _mi_StartMonitoring_Click(object sender, EventArgs e) {
             ContextMenuClick(sender, new ContextMenuClickedEventArgs() { contextMenuItem = ContextMenuItems.StartMonitoring });
         }
         private void _mi_StopMonitoring_Click(object sender, EventArgs e) {
             ContextMenuClick(sender, new ContextMenuClickedEventArgs() { contextMenuItem = ContextMenuItems.StopMonitoring });
         }
+        private void _mi_CloseConsole_Click(object sender, EventArgs e) {
+            ContextMenuClick(sender, new ContextMenuClickedEventArgs() { contextMenuItem = ContextMenuItems.CloseConsole });
+        }
+        private void _mi_ShowMiscellaneousSettingsForm_Click(object sender, EventArgs e) {
+            ContextMenuClick(sender, new ContextMenuClickedEventArgs() { contextMenuItem = ContextMenuItems.ShowMiscellaneousSettingsForm });
+        }
         private void _mi_ShowPositionSettingForm_Click(object sender, EventArgs e) {
             ContextMenuClick(sender, new ContextMenuClickedEventArgs() { contextMenuItem = ContextMenuItems.ShowPositionSettingForm });
         }
         private void _mi_ShowHotkeySettingForm_Click(object sender, EventArgs e) {
-            ContextMenuClick(sender, new ContextMenuClickedEventArgs() { contextMenuItem = ContextMenuItems.HotkeySetting });
+            ContextMenuClick(sender, new ContextMenuClickedEventArgs() { contextMenuItem = ContextMenuItems.ShowHotkeySettingForm });
         }
         private void _mi_ExitProgram_Click(object sender, EventArgs e) {
             ContextMenuClick(sender, new ContextMenuClickedEventArgs() { contextMenuItem = ContextMenuItems.ExitProgram });

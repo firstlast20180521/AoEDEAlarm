@@ -40,7 +40,7 @@ namespace AoEDEAlarm {
                 }
 
                 //一定時間が経過していない場合は、１ループパス
-                if ( DateTime.Now - last_clock < time_span) {
+                if (DateTime.Now - last_clock < time_span) {
                     //ここで鼓動を作り出す。
                     await Task.Delay(300);
                     continue;
@@ -88,80 +88,92 @@ namespace AoEDEAlarm {
                         //
                         //木
                         //
-                        int woodValue = CheckWood(mat);
-                        if (woodValue >= GlobalValues.SoundSetting.WoodStock.AlarmValue) {
-                            if (!isAlarmed) {
-                                GlobalValues2.AudioHelper_WoodStock.Play(GlobalValues.ApplicationSetting.MasterVolume);
-                                isAlarmed = true;
+                        if (GlobalValues.AlarmSetting.Wood.Enabled) {
+                            int woodValue = CheckWood(mat);
+                            if (woodValue >= GlobalValues.AlarmSetting.Wood.AlarmValue) {
+                                if (!isAlarmed) {
+                                    GlobalValues2.AudioHelper_WoodStock.Play(GlobalValues.ApplicationSetting.MasterVolume);
+                                    isAlarmed = true;
+                                }
+                                GlobalValues.Console.Add($"木が{woodValue}余っています。");
                             }
-                            GlobalValues.Console.Add($"木が{woodValue}余っています。");
                         }
 
                         //
                         //食料
                         //
-                        int foodValue = CheckFood(mat);
-                        if (foodValue >= GlobalValues.SoundSetting.FoodStock.AlarmValue) {
-                            if (!isAlarmed) {
-                                GlobalValues2.AudioHelper_FoodStock.Play(GlobalValues.ApplicationSetting.MasterVolume);
-                                isAlarmed = true;
+                        if (GlobalValues.AlarmSetting.Food.Enabled) {
+                            int foodValue = CheckFood(mat);
+                            if (foodValue >= GlobalValues.AlarmSetting.Food.AlarmValue) {
+                                if (!isAlarmed) {
+                                    GlobalValues2.AudioHelper_FoodStock.Play(GlobalValues.ApplicationSetting.MasterVolume);
+                                    isAlarmed = true;
+                                }
+                                GlobalValues.Console.Add($"食料が{foodValue}余っています。");
                             }
-                            GlobalValues.Console.Add($"食料が{foodValue}余っています。");
                         }
 
                         //
                         //金
                         //
-                        int goldValue = CheckGold(mat);
-                        if (goldValue >= GlobalValues.SoundSetting.GoldStock.AlarmValue) {
-                            if (!isAlarmed) {
-                                GlobalValues2.AudioHelper_GoldStock.Play(GlobalValues.ApplicationSetting.MasterVolume);
-                                isAlarmed = true;
+                        if (GlobalValues.AlarmSetting.Gold.Enabled) {
+                            int goldValue = CheckGold(mat);
+                            if (goldValue >= GlobalValues.AlarmSetting.Gold.AlarmValue) {
+                                if (!isAlarmed) {
+                                    GlobalValues2.AudioHelper_GoldStock.Play(GlobalValues.ApplicationSetting.MasterVolume);
+                                    isAlarmed = true;
+                                }
+                                GlobalValues.Console.Add($"金が{goldValue}余っています。");
                             }
-                            GlobalValues.Console.Add($"金が{goldValue}余っています。");
                         }
 
                         //
                         //石
                         //
-                        int stoneValue = CheckStone(mat);
-                        if (stoneValue >= GlobalValues.SoundSetting.StoneStock.AlarmValue) {
-                            if (!isAlarmed) {
-                                GlobalValues2.AudioHelper_StoneStock.Play(GlobalValues.ApplicationSetting.MasterVolume);
-                                isAlarmed = true;
+                        if (GlobalValues.AlarmSetting.Stone.Enabled) {
+                            int stoneValue = CheckStone(mat);
+                            if (stoneValue >= GlobalValues.AlarmSetting.Stone.AlarmValue) {
+                                if (!isAlarmed) {
+                                    GlobalValues2.AudioHelper_StoneStock.Play(GlobalValues.ApplicationSetting.MasterVolume);
+                                    isAlarmed = true;
+                                }
+                                GlobalValues.Console.Add($"石が{stoneValue}余っています。");
                             }
-                            GlobalValues.Console.Add($"石が{stoneValue}余っています。");
                         }
 
                         //
                         //遊休農民
                         //
-                        int numberNotWorking;
-                        bool rtn2 = CheckNotWorking(mat, out numberNotWorking);
-                        if (rtn2) {
-                            if (numberNotWorking >= GlobalValues.SoundSetting.NotWorking.AlarmValue) {
-                                //アラーム音を出す。
-                                if (!isAlarmed) {
-                                    GlobalValues2.AudioHelper_NotWorking.Play(GlobalValues.ApplicationSetting.MasterVolume);
-                                    isAlarmed = true;
+                        if (GlobalValues.AlarmSetting.NotWorking.Enabled) {
+                            int numberNotWorking;
+                            bool rtn2 = CheckNotWorking(mat, out numberNotWorking);
+                            if (rtn2) {
+                                if (numberNotWorking >= GlobalValues.AlarmSetting.NotWorking.AlarmValue) {
+                                    //アラーム音を出す。
+                                    if (!isAlarmed) {
+                                        GlobalValues2.AudioHelper_NotWorking.Play(GlobalValues.ApplicationSetting.MasterVolume);
+                                        isAlarmed = true;
+                                    }
+                                    GlobalValues.Console.Add($"農民が{numberNotWorking}人遊んでいます。");
                                 }
-                                GlobalValues.Console.Add($"農民が{numberNotWorking}人遊んでいます。");
                             }
                         }
 
                         //
                         //家
                         //
-                        int popNumerator;
-                        int popDenominator;
-                        bool rtn1 = CheckHousingShortage(mat, out popNumerator, out popDenominator);
-                        if (rtn1) {
-                            if (popDenominator - popNumerator <= GlobalValues.SoundSetting.Housing.AlarmValue) {
-                                if (!isAlarmed) {
-                                    GlobalValues2.AudioHelper_Housing.Play(GlobalValues.ApplicationSetting.MasterVolume);
-                                    isAlarmed = true;
+                        if (GlobalValues.AlarmSetting.Housing.Enabled) {
+                            int popNumerator;
+                            int popDenominator;
+                            bool rtn1 = CheckHousingShortage(mat, out popNumerator, out popDenominator);
+                            if (rtn1) {
+                                if (popDenominator - popNumerator <= GlobalValues.AlarmSetting.Housing.AlarmValue) {
+                                    if (!isAlarmed) {
+                                        GlobalValues2.AudioHelper_Housing.Play(GlobalValues.ApplicationSetting.MasterVolume);
+                                        isAlarmed = true;
+                                    }
+                                    GlobalValues.Console.Add($"家が不足しています。");
                                 }
-                                GlobalValues.Console.Add($"家が不足しています。");
                             }
                         }
                     }
@@ -188,7 +200,11 @@ namespace AoEDEAlarm {
                 //double height = GlobalValues.ApplicationSetting.Housing.Height * GlobalValues.Scale;
                 //Point loc = new Point(x, y);
                 //Size sz = new Size(width, height);
-                using (Mat mat2 = mat.Clone(new OpenCvSharp.Rect(loc, sz))) {
+
+                Point loc2 = OpenCvUtil.Enlarge(loc, GlobalValues.ApplicationSetting.UiScale);
+                Size sz2 = OpenCvUtil.Enlarge(sz, GlobalValues.ApplicationSetting.UiScale);
+
+                using (Mat mat2 = mat.Clone(new OpenCvSharp.Rect(loc2, sz2))) {
                     //mat2.ImWrite(@"D:\Work\画像調査\部分画像1.png",  );
 
                     Scalar s_min = new Scalar(0, 0, 100);
@@ -221,7 +237,11 @@ namespace AoEDEAlarm {
             try {
                 Point loc = new Point(GlobalValues.ApplicationSetting.Players.X, GlobalValues.ApplicationSetting.Players.Y);
                 Size sz = new Size(GlobalValues.ApplicationSetting.Players.Width, GlobalValues.ApplicationSetting.Players.Height);
-                using (Mat mat2 = mat.Clone(new OpenCvSharp.Rect(loc, sz))) {
+
+                Point loc2 = OpenCvUtil.Enlarge(loc, GlobalValues.ApplicationSetting.UiScale);
+                Size sz2 = OpenCvUtil.Enlarge(sz, GlobalValues.ApplicationSetting.UiScale);
+
+                using (Mat mat2 = mat.Clone(new OpenCvSharp.Rect(loc2, sz2))) {
                     //Cv2.ImShow("mat_mask_white", mat2);
                     //Cv2.WaitKey(10);
                     //InputArray lower_white = InputArray.Create(new int[3] { 0, 0, 100 });
@@ -250,7 +270,10 @@ namespace AoEDEAlarm {
             Point loc = new Point(GlobalValues.ApplicationSetting.Housing.X, GlobalValues.ApplicationSetting.Housing.Y);
             Size sz = new Size(GlobalValues.ApplicationSetting.Housing.Width, GlobalValues.ApplicationSetting.Housing.Height);
 
-            using (Mat mat2 = mat.Clone(new OpenCvSharp.Rect(loc, sz))) {
+            Point loc2 = OpenCvUtil.Enlarge(loc, GlobalValues.ApplicationSetting.UiScale);
+            Size sz2 = OpenCvUtil.Enlarge(sz, GlobalValues.ApplicationSetting.UiScale);
+
+            using (Mat mat2 = mat.Clone(new OpenCvSharp.Rect(loc2, sz2))) {
                 //Cv2.ImShow("mat2", mat2);
                 //Cv2.WaitKey(100);
 
@@ -285,7 +308,10 @@ namespace AoEDEAlarm {
             Point loc = new Point(GlobalValues.ApplicationSetting.Wood.X, GlobalValues.ApplicationSetting.Wood.Y);
             Size sz = new Size(GlobalValues.ApplicationSetting.Wood.Width, GlobalValues.ApplicationSetting.Wood.Height);
 
-            using (Mat mat2 = mat.Clone(new OpenCvSharp.Rect(loc, sz))) {
+            Point loc2 = OpenCvUtil.Enlarge(loc, GlobalValues.ApplicationSetting.UiScale);
+            Size sz2 = OpenCvUtil.Enlarge(sz, GlobalValues.ApplicationSetting.UiScale);
+
+            using (Mat mat2 = mat.Clone(new OpenCvSharp.Rect(loc2, sz2))) {
 
                 using (Mat mat3 = OpenCvUtil.Reverse(mat2)) {
                     using (Mat mat4 = new Mat()) {
@@ -311,7 +337,10 @@ namespace AoEDEAlarm {
             Point loc = new Point(GlobalValues.ApplicationSetting.Food.X, GlobalValues.ApplicationSetting.Food.Y);
             Size sz = new Size(GlobalValues.ApplicationSetting.Food.Width, GlobalValues.ApplicationSetting.Food.Height);
 
-            using (Mat mat2 = mat.Clone(new OpenCvSharp.Rect(loc, sz))) {
+            Point loc2 = OpenCvUtil.Enlarge(loc, GlobalValues.ApplicationSetting.UiScale);
+            Size sz2 = OpenCvUtil.Enlarge(sz, GlobalValues.ApplicationSetting.UiScale);
+
+            using (Mat mat2 = mat.Clone(new OpenCvSharp.Rect(loc2, sz2))) {
                 using (Mat mat3 = OpenCvUtil.Reverse(mat2)) {
                     using (Mat mat4 = new Mat()) {
                         Cv2.Resize(mat3, mat4, new Size(mat3.Width * 3, mat3.Height * 3));
@@ -334,7 +363,10 @@ namespace AoEDEAlarm {
             Point loc = new Point(GlobalValues.ApplicationSetting.Gold.X, GlobalValues.ApplicationSetting.Gold.Y);
             Size sz = new Size(GlobalValues.ApplicationSetting.Gold.Width, GlobalValues.ApplicationSetting.Gold.Height);
 
-            using (Mat mat2 = mat.Clone(new OpenCvSharp.Rect(loc, sz))) {
+            Point loc2 = OpenCvUtil.Enlarge(loc, GlobalValues.ApplicationSetting.UiScale);
+            Size sz2 = OpenCvUtil.Enlarge(sz, GlobalValues.ApplicationSetting.UiScale);
+
+            using (Mat mat2 = mat.Clone(new OpenCvSharp.Rect(loc2, sz2))) {
                 using (Mat mat3 = OpenCvUtil.Reverse(mat2)) {
                     using (Mat mat4 = new Mat()) {
                         Cv2.Resize(mat3, mat4, new Size(mat3.Width * 3, mat3.Height * 3));
@@ -357,7 +389,10 @@ namespace AoEDEAlarm {
             Point loc = new Point(GlobalValues.ApplicationSetting.Stone.X, GlobalValues.ApplicationSetting.Stone.Y);
             Size sz = new Size(GlobalValues.ApplicationSetting.Stone.Width, GlobalValues.ApplicationSetting.Stone.Height);
 
-            using (Mat mat2 = mat.Clone(new OpenCvSharp.Rect(loc, sz))) {
+            Point loc2 = OpenCvUtil.Enlarge(loc, GlobalValues.ApplicationSetting.UiScale);
+            Size sz2 = OpenCvUtil.Enlarge(sz, GlobalValues.ApplicationSetting.UiScale);
+
+            using (Mat mat2 = mat.Clone(new OpenCvSharp.Rect(loc2, sz2))) {
                 using (Mat mat3 = OpenCvUtil.Reverse(mat2)) {
                     using (Mat mat4 = new Mat()) {
                         Cv2.Resize(mat3, mat4, new Size(mat3.Width * 3, mat3.Height * 3));
@@ -383,7 +418,10 @@ namespace AoEDEAlarm {
             Point loc = new Point(GlobalValues.ApplicationSetting.NotWorking.X, GlobalValues.ApplicationSetting.NotWorking.Y);
             Size sz = new Size(GlobalValues.ApplicationSetting.NotWorking.Width, GlobalValues.ApplicationSetting.NotWorking.Height);
 
-            using (Mat mat2 = mat1.Clone(new OpenCvSharp.Rect(loc, sz))) {
+            Point loc2 = OpenCvUtil.Enlarge(loc, GlobalValues.ApplicationSetting.UiScale);
+            Size sz2 = OpenCvUtil.Enlarge(sz, GlobalValues.ApplicationSetting.UiScale);
+
+            using (Mat mat2 = mat1.Clone(new OpenCvSharp.Rect(loc2, sz2))) {
 
                 double max_value = 0;
                 int max_idx = -1;
@@ -399,7 +437,7 @@ namespace AoEDEAlarm {
                 numberNotWorking = max_idx;
 
                 if (max_idx != -1) return true;
-                
+
                 return false;
 
             }
