@@ -242,21 +242,22 @@ namespace AoEDEAlarm {
                 Size sz2 = OpenCvUtil.Enlarge(sz, GlobalValues.ApplicationSetting.UiScale);
 
                 using (Mat mat2 = mat.Clone(new OpenCvSharp.Rect(loc2, sz2))) {
-                    //Cv2.ImShow("mat_mask_white", mat2);
-                    //Cv2.WaitKey(10);
+                    Cv2.ImShow("mat2", mat2);
+                    Cv2.WaitKey();
                     //InputArray lower_white = InputArray.Create(new int[3] { 0, 0, 100 });
                     //InputArray upper_white = InputArray.Create(new int[3] { 180, 45, 255 });
                     //using (Mat mat_mask_white = mat2.InRange(lower_white, upper_white)) {
                     //    Cv2.ImShow("mat_mask_white", mat_mask_white);
                     //    Cv2.WaitKey(10);
                     //}
-
-                    //色を抽出する個所
-                    Scalar s_min = new Scalar(0, 0, 100);
-                    Scalar s_max = new Scalar(100, 100, 255);                    //The lower boundary is neither an array of the same size and same type as src, nor a scalar
-                    using (Mat mask_image = mat2.InRange(s_min, s_max)) {
-                        //Cv2.ImShow("mask_image", mask_image);
-                        //Cv2.WaitKey(10);
+                    using (Mat hsv_image = new Mat()) {
+                        Cv2.CvtColor(mat2, hsv_image, ColorConversionCodes.BGR2HSV);
+                        Scalar s_min = new Scalar(20, 80, 10);
+                        Scalar s_max = new Scalar(50, 255, 255);                    //The lower boundary is neither an array of the same size and same type as src, nor a scalar
+                        using (Mat mask_image = hsv_image.InRange(s_min, s_max)) {
+                            Cv2.ImShow("mask_image", mask_image);
+                            Cv2.WaitKey();
+                        }
                     }
                 }
 
@@ -264,6 +265,38 @@ namespace AoEDEAlarm {
                 Console.WriteLine($"{ex.Message}");
             }
             return true;
+        }
+
+        private Mat GetColorMat(Mat img) {
+            //元の画像を読込
+            //Mat img = new Mat("test.jpg");
+
+            //二値化画像を保存するMatの準備
+            Mat bin_iplImg = new Mat(); //Cv.CreateImage(img.Size, BitDepth.U8, 1);
+
+            //RGB要素のMatの準備 Cv2.CreateImage(img.Size, BitDepth.U8, 1)
+            Mat r_iplImg = img.EmptyClone();
+            Mat g_iplImg = img.EmptyClone();
+            Mat b_iplImg = img.EmptyClone();
+
+            //元画像をRGBに分解
+            Mat[] temp = Cv2.Split(img);
+
+            //RGB各要素の閾値
+            int r_threshold = 180;
+            int g_threshold = 230;
+            int b_threshold = 150;
+
+            // 各RGB要素で閾値以下のピクセルを抽出する
+            Cv2.Threshold(temp[2], r_iplImg, r_threshold, 255, ThresholdTypes.BinaryInv);
+            Cv2.Threshold(temp[1], g_iplImg, g_threshold, 255, ThresholdTypes.BinaryInv);
+            Cv2.Threshold(temp[0], b_iplImg, b_threshold, 255, ThresholdTypes.BinaryInv);
+
+            // ORでRGB要素を合算
+            Cv2.BitwiseOr(b_iplImg, g_iplImg, bin_iplImg, null);
+            Cv2.BitwiseOr(bin_iplImg, r_iplImg, bin_iplImg, null);
+
+            return bin_iplImg;
         }
 
         private bool CheckHousingShortage(Mat mat, out int popNumerator, out int popDenominator) {

@@ -297,10 +297,10 @@
             this.updownHousing.Location = new System.Drawing.Point(287, 474);
             this.updownHousing.Margin = new System.Windows.Forms.Padding(7);
             this.updownHousing.Minimum = new decimal(new int[] {
-            1,
+            100,
             0,
             0,
-            0});
+            -2147483648});
             this.updownHousing.Name = "updownHousing";
             this.updownHousing.Size = new System.Drawing.Size(99, 32);
             this.updownHousing.TabIndex = 0;

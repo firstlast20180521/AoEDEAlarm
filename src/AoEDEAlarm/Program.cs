@@ -77,7 +77,8 @@ namespace AoEDEAlarm {
 
                 } catch (Exception ex) {
                     // アプリケーション例外処理
-                    Console.WriteLine(ex.Message);
+                    //Console.WriteLine(ex.Message);
+                    MessageBox.Show(ex.Message);
 
                 } finally {
                     if (hasHandle) {
@@ -132,7 +133,9 @@ namespace AoEDEAlarm {
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private static void Hotkey_Customise_HotkeyEvent(object sender, EventArgs e) {
-            ShowPositionSettingForm();
+            //ShowPositionSettingForm();
+            GlobalValues.Console.Show();
+            GlobalValues.Console.Start();
         }
 
         /// <summary>
