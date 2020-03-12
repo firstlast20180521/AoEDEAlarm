@@ -6,7 +6,7 @@ using System.Text;
 using System.Windows.Forms;
 
 namespace AoEDEAlarm {
-    public class HotKey : IDisposable {
+    public sealed class HotKey : IDisposable {
         private const int MOD_ALT = 0x01;
         private const int MOD_CONTROL = 0x02;
         private const int MOD_SHIFT = 0x04;
@@ -18,14 +18,12 @@ namespace AoEDEAlarm {
         [DllImport("user32")]
         static extern int UnregisterHotKey(IntPtr hwnd, int id);
 
-        //[DllImport("kernel32", EntryPoint = "GlobalAddAtomA", CharSet = CharSet.Unicode)]
         [DllImport("kernel32", EntryPoint = "GlobalAddAtomA")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA2101:Specify marshaling for P/Invoke string arguments", Justification = "<•Û—¯’†>")]
         static extern short GlobalAddAtom(string lpString);
 
         [DllImport("kernel32")]
         static extern short GlobalDeleteAtom(short nAtom);
-
-        //CancellationTokenSource tokenSource = null;
 
         private HotkeyForm hWnd = null;
 
@@ -114,5 +112,32 @@ namespace AoEDEAlarm {
                 base.WndProc(ref m);
             }
         }
+
+        public static string GetKeysString(Keys keys) {
+            StringBuilder sb = new StringBuilder();
+
+            if ((keys & Keys.Alt) == Keys.Alt) {
+                sb.Append("ALT");
+            }
+
+            if ((keys & Keys.Control) == Keys.Control) {
+                if (sb.Length > 0) sb.Append(" + ");
+                sb.Append("CTRL");
+            }
+
+            if ((keys & Keys.Shift) == Keys.Shift) {
+                if (sb.Length > 0) sb.Append(" + ");
+                sb.Append("SHIFT");
+            }
+
+            Keys k = keys & ~Keys.Control & ~Keys.Shift & ~Keys.Alt;
+
+            if (k != 0) {
+                if (sb.Length > 0) sb.Append(" + ");
+                sb.Append(k);
+            }
+            return sb.ToString();
+        }
+
     }
 }

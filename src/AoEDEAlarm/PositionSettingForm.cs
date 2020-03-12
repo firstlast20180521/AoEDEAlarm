@@ -15,59 +15,89 @@ namespace AoEDEAlarm {
 
         private MouseEventArgs sPos;
         private MouseEventArgs ePos;
+        ApplicationSettingClass _ps;
+        double _k;
 
         public PositionSettingForm() {
             InitializeComponent();
+
+            _k = (double)GlobalValues.ApplicationSetting.UiScale / 100d;
+
+            _ps = new ApplicationSettingClass {
+                Wood = new ApplicationSettingClass.Rectangle {
+                    X = (int)((double)GlobalValues.ApplicationSetting.Wood.X * _k),
+                    Y = (int)((double)GlobalValues.ApplicationSetting.Wood.Y * _k),
+                    Width = (int)((double)GlobalValues.ApplicationSetting.Wood.Width * _k),
+                    Height = (int)((double)GlobalValues.ApplicationSetting.Wood.Height * _k),
+                },
+
+                Food = new ApplicationSettingClass.Rectangle {
+                    X = (int)((double)GlobalValues.ApplicationSetting.Food.X * _k),
+                    Y = (int)((double)GlobalValues.ApplicationSetting.Food.Y * _k),
+                    Width = (int)((double)GlobalValues.ApplicationSetting.Food.Width * _k),
+                    Height = (int)((double)GlobalValues.ApplicationSetting.Food.Height * _k),
+                },
+
+                Gold = new ApplicationSettingClass.Rectangle {
+                    X = (int)((double)GlobalValues.ApplicationSetting.Gold.X * _k),
+                    Y = (int)((double)GlobalValues.ApplicationSetting.Gold.Y * _k),
+                    Width = (int)((double)GlobalValues.ApplicationSetting.Gold.Width * _k),
+                    Height = (int)((double)GlobalValues.ApplicationSetting.Gold.Height * _k),
+                },
+
+                Stone = new ApplicationSettingClass.Rectangle {
+                    X = (int)((double)GlobalValues.ApplicationSetting.Stone.X * _k),
+                    Y = (int)((double)GlobalValues.ApplicationSetting.Stone.Y * _k),
+                    Width = (int)((double)GlobalValues.ApplicationSetting.Stone.Width * _k),
+                    Height = (int)((double)GlobalValues.ApplicationSetting.Stone.Height * _k),
+                },
+
+                Housing = new ApplicationSettingClass.Rectangle {
+                    X = (int)((double)GlobalValues.ApplicationSetting.Housing.X * _k),
+                    Y = (int)((double)GlobalValues.ApplicationSetting.Housing.Y * _k),
+                    Width = (int)((double)GlobalValues.ApplicationSetting.Housing.Width * _k),
+                    Height = (int)((double)GlobalValues.ApplicationSetting.Housing.Height * _k),
+                },
+
+                NotWorking = new ApplicationSettingClass.Rectangle {
+                    X = (int)((double)GlobalValues.ApplicationSetting.NotWorking.X * _k),
+                    Y = (int)((double)GlobalValues.ApplicationSetting.NotWorking.Y * _k),
+                    Width = (int)((double)GlobalValues.ApplicationSetting.NotWorking.Width * _k),
+                    Height = (int)((double)GlobalValues.ApplicationSetting.NotWorking.Height * _k),
+                },
+
+                Players = new ApplicationSettingClass.Rectangle {
+                    X = (int)((double)GlobalValues.ApplicationSetting.Players.X * _k),
+                    Y = (int)((double)GlobalValues.ApplicationSetting.Players.Y * _k),
+                    Width = (int)((double)GlobalValues.ApplicationSetting.Players.Width * _k),
+                    Height = (int)((double)GlobalValues.ApplicationSetting.Players.Height * _k),
+                },
+
+                MiniMap = new ApplicationSettingClass.Rectangle {
+                    X = (int)((double)GlobalValues.ApplicationSetting.MiniMap.X * _k),
+                    Y = (int)((double)GlobalValues.ApplicationSetting.MiniMap.Y * _k),
+                    Width = (int)((double)GlobalValues.ApplicationSetting.MiniMap.Width * _k),
+                    Height = (int)((double)GlobalValues.ApplicationSetting.MiniMap.Height * _k),
+                },
+
+            };
+
         }
 
-        private enum ResourceKind {
+        private enum PositionKind {
             Wood,
             Food,
             Gold,
             Stone,
-            Population,
+            Housing,
+            NotWorking,
+            Players,
+            MiniMap,
         }
 
-        private RadioButton[] radioButtons = new RadioButton[Enum.GetNames(typeof(ResourceKind)).Length];
-        private PictureBox[] pictureBoxes = new PictureBox[Enum.GetNames(typeof(ResourceKind)).Length];
+        private RadioButton[] radioButtons = new RadioButton[Enum.GetNames(typeof(PositionKind)).Length];
+        private PictureBox[] pictureBoxes = new PictureBox[Enum.GetNames(typeof(PositionKind)).Length];
 
-        AoEDEAlarmSettings _ps = new AoEDEAlarmSettings {
-            Wood = new AoEDEAlarmSettings.Rectangle {
-                X = AoedeStaticGlobal.Settings.Wood.X,
-                Y = AoedeStaticGlobal.Settings.Wood.Y,
-                Width = AoedeStaticGlobal.Settings.Wood.Width,
-                Height = AoedeStaticGlobal.Settings.Wood.Height,
-            },
-
-            Food = new AoEDEAlarmSettings.Rectangle {
-                X = AoedeStaticGlobal.Settings.Food.X,
-                Y = AoedeStaticGlobal.Settings.Food.Y,
-                Width = AoedeStaticGlobal.Settings.Food.Width,
-                Height = AoedeStaticGlobal.Settings.Food.Height,
-            },
-
-            Gold = new AoEDEAlarmSettings.Rectangle {
-                X = AoedeStaticGlobal.Settings.Gold.X,
-                Y = AoedeStaticGlobal.Settings.Gold.Y,
-                Width = AoedeStaticGlobal.Settings.Gold.Width,
-                Height = AoedeStaticGlobal.Settings.Gold.Height,
-            },
-
-            Stone = new AoEDEAlarmSettings.Rectangle {
-                X = AoedeStaticGlobal.Settings.Stone.X,
-                Y = AoedeStaticGlobal.Settings.Stone.Y,
-                Width = AoedeStaticGlobal.Settings.Stone.Width,
-                Height = AoedeStaticGlobal.Settings.Stone.Height,
-            },
-
-            Population = new AoEDEAlarmSettings.Rectangle {
-                X = AoedeStaticGlobal.Settings.Population.X,
-                Y = AoedeStaticGlobal.Settings.Population.Y,
-                Width = AoedeStaticGlobal.Settings.Population.Width,
-                Height = AoedeStaticGlobal.Settings.Population.Height,
-            },
-
-        };
 
 
 
@@ -78,7 +108,10 @@ namespace AoEDEAlarm {
             radioButtons[1] = this.rdoFood;
             radioButtons[2] = this.rdoGold;
             radioButtons[3] = this.rdoStone;
-            radioButtons[4] = this.rdoPopulation;
+            radioButtons[4] = this.rdoHousing;
+            radioButtons[5] = this.rdoNotWorking;
+            radioButtons[6] = this.rdoPlayers;
+            radioButtons[7] = this.rdoMiniMap;
 
             radioButtons[0].Focus();
 
@@ -91,7 +124,10 @@ namespace AoEDEAlarm {
             pictureBoxes[1] = this.pctFood;
             pictureBoxes[2] = this.pctGold;
             pictureBoxes[3] = this.pctStone;
-            pictureBoxes[4] = this.pctPopulation;
+            pictureBoxes[4] = this.pctHousing;
+            pictureBoxes[5] = this.pctNotWorking;
+            pictureBoxes[6] = this.pctPlayers;
+            pictureBoxes[7] = this.pctMiniMap;
 
             //フルスクリーン矩形を作成
             Rectangle rect = Screen.PrimaryScreen.Bounds;
@@ -114,7 +150,10 @@ namespace AoEDEAlarm {
                 DrawPicture(pctCanvas, _ps.Food.X, _ps.Food.Y, _ps.Food.Width, _ps.Food.Height, pctFood);
                 DrawPicture(pctCanvas, _ps.Gold.X, _ps.Gold.Y, _ps.Gold.Width, _ps.Gold.Height, pctGold);
                 DrawPicture(pctCanvas, _ps.Stone.X, _ps.Stone.Y, _ps.Stone.Width, _ps.Stone.Height, pctStone);
-                DrawPicture(pctCanvas, _ps.Population.X, _ps.Population.Y, _ps.Population.Width, _ps.Population.Height, pctPopulation);
+                DrawPicture(pctCanvas, _ps.Housing.X, _ps.Housing.Y, _ps.Housing.Width, _ps.Housing.Height, pctHousing);
+                DrawPicture(pctCanvas, _ps.NotWorking.X, _ps.NotWorking.Y, _ps.NotWorking.Width, _ps.NotWorking.Height, pctNotWorking);
+                DrawPicture(pctCanvas, _ps.Players.X, _ps.Players.Y, _ps.Players.Width, _ps.Players.Height, pctPlayers);
+                DrawPicture(pctCanvas, _ps.MiniMap.X, _ps.MiniMap.Y, _ps.MiniMap.Width, _ps.MiniMap.Height, pctMiniMap);
             }
         }
 
@@ -195,13 +234,43 @@ namespace AoEDEAlarm {
                     return;
                 }
 
-                if (rdoPopulation.Checked) {
-                    _ps.Population.X = sPos.X;
-                    _ps.Population.Y = sPos.Y;
-                    _ps.Population.Width = ePos.X - sPos.X;
-                    _ps.Population.Height = ePos.Y - sPos.Y;
+                if (rdoHousing.Checked) {
+                    _ps.Housing.X = sPos.X;
+                    _ps.Housing.Y = sPos.Y;
+                    _ps.Housing.Width = ePos.X - sPos.X;
+                    _ps.Housing.Height = ePos.Y - sPos.Y;
 
-                    DrawPicture(pctCanvas, sPos.X, sPos.Y, ePos.X - sPos.X, ePos.Y - sPos.Y, pctPopulation);
+                    DrawPicture(pctCanvas, sPos.X, sPos.Y, ePos.X - sPos.X, ePos.Y - sPos.Y, pctHousing);
+                    return;
+                }
+
+                if (rdoNotWorking.Checked) {
+                    _ps.NotWorking.X = sPos.X;
+                    _ps.NotWorking.Y = sPos.Y;
+                    _ps.NotWorking.Width = ePos.X - sPos.X;
+                    _ps.NotWorking.Height = ePos.Y - sPos.Y;
+
+                    DrawPicture(pctCanvas, sPos.X, sPos.Y, ePos.X - sPos.X, ePos.Y - sPos.Y, pctNotWorking);
+                    return;
+                }
+
+                if (rdoPlayers.Checked) {
+                    _ps.Players.X = sPos.X;
+                    _ps.Players.Y = sPos.Y;
+                    _ps.Players.Width = ePos.X - sPos.X;
+                    _ps.Players.Height = ePos.Y - sPos.Y;
+
+                    DrawPicture(pctCanvas, sPos.X, sPos.Y, ePos.X - sPos.X, ePos.Y - sPos.Y, pctPlayers);
+                    return;
+                }
+
+                if (rdoMiniMap.Checked) {
+                    _ps.MiniMap.X = sPos.X;
+                    _ps.MiniMap.Y = sPos.Y;
+                    _ps.MiniMap.Width = ePos.X - sPos.X;
+                    _ps.MiniMap.Height = ePos.Y - sPos.Y;
+
+                    DrawPicture(pctCanvas, sPos.X, sPos.Y, ePos.X - sPos.X, ePos.Y - sPos.Y, pctMiniMap);
                     return;
                 }
 
@@ -224,7 +293,7 @@ namespace AoEDEAlarm {
             Graphics g2 = Graphics.FromImage(pictureBox2.Image);
 
             g2.DrawImage(bmp, 0, 0, rect, GraphicsUnit.Pixel);
-            
+
             g2.Dispose();
 
             bmp.Dispose();
@@ -238,41 +307,9 @@ namespace AoEDEAlarm {
         }
 
         private void button1_Click(object sender, EventArgs e) {
-            AoedeStaticGlobal.Settings.Wood.X = _ps.Wood.X;
-            AoedeStaticGlobal.Settings.Wood.Y = _ps.Wood.Y;
-            AoedeStaticGlobal.Settings.Wood.Width = _ps.Wood.Width;
-            AoedeStaticGlobal.Settings.Wood.Height = _ps.Wood.Height;
 
-            AoedeStaticGlobal.Settings.Food.X = _ps.Food.X;
-            AoedeStaticGlobal.Settings.Food.Y = _ps.Food.Y;
-            AoedeStaticGlobal.Settings.Food.Width = _ps.Food.Width;
-            AoedeStaticGlobal.Settings.Food.Height = _ps.Food.Height;
-
-            AoedeStaticGlobal.Settings.Gold.X = _ps.Gold.X;
-            AoedeStaticGlobal.Settings.Gold.Y = _ps.Gold.Y;
-            AoedeStaticGlobal.Settings.Gold.Width = _ps.Gold.Width;
-            AoedeStaticGlobal.Settings.Gold.Height = _ps.Gold.Height;
-
-            AoedeStaticGlobal.Settings.Stone.X = _ps.Stone.X;
-            AoedeStaticGlobal.Settings.Stone.Y = _ps.Stone.Y;
-            AoedeStaticGlobal.Settings.Stone.Width = _ps.Stone.Width;
-            AoedeStaticGlobal.Settings.Stone.Height = _ps.Stone.Height;
-
-            AoedeStaticGlobal.Settings.Population.X = _ps.Population.X;
-            AoedeStaticGlobal.Settings.Population.Y = _ps.Population.Y;
-            AoedeStaticGlobal.Settings.Population.Width = _ps.Population.Width;
-            AoedeStaticGlobal.Settings.Population.Height = _ps.Population.Height;
-
-            AoEDEAlarmSettings.SaveXml(AoedeStaticGlobal.Settings);
-
-            MessageBox.Show(text: "位置を保存しました。"
-                , caption: "画像位置設定"
-                , buttons: MessageBoxButtons.OK
-                , icon: MessageBoxIcon.Information
-                , defaultButton: MessageBoxDefaultButton.Button1
-                , options: MessageBoxOptions.DefaultDesktopOnly
-                );
-
+            bool rtn = SaveData();
+            if (!rtn) return;
             this.Close();
         }
 
@@ -281,36 +318,150 @@ namespace AoEDEAlarm {
 
         }
 
+        private void button3_Click(object sender, EventArgs e) {
+
+            bool rtn = SaveData();
+            if (!rtn) return;
+
+            MessageBox.Show(text: "位置を保存しました。"
+                , caption: "画像位置設定"
+                , buttons: MessageBoxButtons.OK
+                , icon: MessageBoxIcon.Information
+                , defaultButton: MessageBoxDefaultButton.Button1
+                , options: MessageBoxOptions.DefaultDesktopOnly
+                );
+        }
+
+        private bool SaveData() {
+            //if (GlobalValues.ApplicationSetting.UiScale != 100) {
+            //    MessageBox.Show(text: "ＵＩスケールが１００％以外です。当アプリケーションの各種設定、及びゲームのＵＩスケールを１００％にした上で位置設定を行ってください。"
+            //        , caption: "画像位置設定"
+            //        , buttons: MessageBoxButtons.OK
+            //        , icon: MessageBoxIcon.Error
+            //        , defaultButton: MessageBoxDefaultButton.Button1
+            //        , options: MessageBoxOptions.DefaultDesktopOnly
+            //        );
+            //    return false;
+            //}
+
+            if (_ps.NotWorking.Width < 23) {
+                MessageBox.Show(text: "遊休農民の幅が足りません。"
+                    , caption: "画像位置設定"
+                    , buttons: MessageBoxButtons.OK
+                    , icon: MessageBoxIcon.Error
+                    , defaultButton: MessageBoxDefaultButton.Button1
+                    , options: MessageBoxOptions.DefaultDesktopOnly
+                    );
+                return false;
+            }
+
+            if (_ps.NotWorking.Height < 10) {
+                MessageBox.Show(text: "遊休農民の高さが足りません。"
+                    , caption: "画像位置設定"
+                    , buttons: MessageBoxButtons.OK
+                    , icon: MessageBoxIcon.Error
+                    , defaultButton: MessageBoxDefaultButton.Button1
+                    , options: MessageBoxOptions.DefaultDesktopOnly
+                    );
+                return false;
+            }
+
+            GlobalValues.ApplicationSetting.Wood.X = _ps.Wood.X;
+            GlobalValues.ApplicationSetting.Wood.Y = _ps.Wood.Y;
+            GlobalValues.ApplicationSetting.Wood.Width = _ps.Wood.Width;
+            GlobalValues.ApplicationSetting.Wood.Height = _ps.Wood.Height;
+
+            GlobalValues.ApplicationSetting.Food.X = _ps.Food.X;
+            GlobalValues.ApplicationSetting.Food.Y = _ps.Food.Y;
+            GlobalValues.ApplicationSetting.Food.Width = _ps.Food.Width;
+            GlobalValues.ApplicationSetting.Food.Height = _ps.Food.Height;
+
+            GlobalValues.ApplicationSetting.Gold.X = _ps.Gold.X;
+            GlobalValues.ApplicationSetting.Gold.Y = _ps.Gold.Y;
+            GlobalValues.ApplicationSetting.Gold.Width = _ps.Gold.Width;
+            GlobalValues.ApplicationSetting.Gold.Height = _ps.Gold.Height;
+
+            GlobalValues.ApplicationSetting.Stone.X = _ps.Stone.X;
+            GlobalValues.ApplicationSetting.Stone.Y = _ps.Stone.Y;
+            GlobalValues.ApplicationSetting.Stone.Width = _ps.Stone.Width;
+            GlobalValues.ApplicationSetting.Stone.Height = _ps.Stone.Height;
+
+            GlobalValues.ApplicationSetting.Housing.X = _ps.Housing.X;
+            GlobalValues.ApplicationSetting.Housing.Y = _ps.Housing.Y;
+            GlobalValues.ApplicationSetting.Housing.Width = _ps.Housing.Width;
+            GlobalValues.ApplicationSetting.Housing.Height = _ps.Housing.Height;
+
+            GlobalValues.ApplicationSetting.NotWorking.X = _ps.NotWorking.X;
+            GlobalValues.ApplicationSetting.NotWorking.Y = _ps.NotWorking.Y;
+            GlobalValues.ApplicationSetting.NotWorking.Width = _ps.NotWorking.Width;
+            GlobalValues.ApplicationSetting.NotWorking.Height = _ps.NotWorking.Height;
+
+            GlobalValues.ApplicationSetting.Players.X = _ps.Players.X;
+            GlobalValues.ApplicationSetting.Players.Y = _ps.Players.Y;
+            GlobalValues.ApplicationSetting.Players.Width = _ps.Players.Width;
+            GlobalValues.ApplicationSetting.Players.Height = _ps.Players.Height;
+
+            GlobalValues.ApplicationSetting.MiniMap.X = _ps.MiniMap.X;
+            GlobalValues.ApplicationSetting.MiniMap.Y = _ps.MiniMap.Y;
+            GlobalValues.ApplicationSetting.MiniMap.Width = _ps.MiniMap.Width;
+            GlobalValues.ApplicationSetting.MiniMap.Height = _ps.MiniMap.Height;
+
+            XmlUtilityClass<ApplicationSettingClass>.SaveXml(GlobalValues.ApplicationSetting, ConstValues.ApplicationSettingFileName);
+
+            return true;
+        }
+
         private void rdoX_CheckedChanged(object sender, EventArgs e) {
 
+            DrawWholePictures();
+
+
+        }
+
+        private void DrawWholePictures() {
             pctCanvas.Refresh();  //最後の四角形を削除
             Graphics g = pctCanvas.CreateGraphics();
             Pen bpen = new Pen(Color.Red, 1);
             bpen.DashStyle = DashStyle.Solid;
 
             //範囲確定の四角形を描く
-            if (radioButtons[(int)ResourceKind.Wood].Checked) {
+            if (radioButtons[(int)PositionKind.Wood].Checked) {
                 g.DrawRectangle(bpen, _ps.Wood.X, _ps.Wood.Y, _ps.Wood.Width, _ps.Wood.Height);
                 return;
             }
 
-            if (radioButtons[(int)ResourceKind.Food].Checked) {
+            if (radioButtons[(int)PositionKind.Food].Checked) {
                 g.DrawRectangle(bpen, _ps.Food.X, _ps.Food.Y, _ps.Food.Width, _ps.Food.Height);
                 return;
             }
 
-            if (radioButtons[(int)ResourceKind.Gold].Checked) {
+            if (radioButtons[(int)PositionKind.Gold].Checked) {
                 g.DrawRectangle(bpen, _ps.Gold.X, _ps.Gold.Y, _ps.Gold.Width, _ps.Gold.Height);
                 return;
             }
 
-            if (radioButtons[(int)ResourceKind.Stone].Checked) {
+            if (radioButtons[(int)PositionKind.Stone].Checked) {
                 g.DrawRectangle(bpen, _ps.Stone.X, _ps.Stone.Y, _ps.Stone.Width, _ps.Stone.Height);
                 return;
             }
 
-            if (radioButtons[(int)ResourceKind.Population].Checked) {
-                g.DrawRectangle(bpen, _ps.Population.X, _ps.Population.Y, _ps.Population.Width, _ps.Population.Height);
+            if (radioButtons[(int)PositionKind.Housing].Checked) {
+                g.DrawRectangle(bpen, _ps.Housing.X, _ps.Housing.Y, _ps.Housing.Width, _ps.Housing.Height);
+                return;
+            }
+
+            if (radioButtons[(int)PositionKind.NotWorking].Checked) {
+                g.DrawRectangle(bpen, _ps.NotWorking.X, _ps.NotWorking.Y, _ps.NotWorking.Width, _ps.NotWorking.Height);
+                return;
+            }
+
+            if (radioButtons[(int)PositionKind.Players].Checked) {
+                g.DrawRectangle(bpen, _ps.Players.X, _ps.Players.Y, _ps.Players.Width, _ps.Players.Height);
+                return;
+            }
+
+            if (radioButtons[(int)PositionKind.MiniMap].Checked) {
+                g.DrawRectangle(bpen, _ps.MiniMap.X, _ps.MiniMap.Y, _ps.MiniMap.Width, _ps.MiniMap.Height);
                 return;
             }
 
@@ -318,5 +469,17 @@ namespace AoEDEAlarm {
 
         }
 
+        private void PositionSettingForm_Paint(object sender, PaintEventArgs e) {
+
+        }
+
+        private void pctCanvas_Paint(object sender, PaintEventArgs e) {
+            //DrawWholePictures();
+
+        }
+
+        private void pctCanvas_Resize(object sender, EventArgs e) {
+
+        }
     }
 }

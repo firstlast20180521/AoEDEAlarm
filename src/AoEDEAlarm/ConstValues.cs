@@ -6,29 +6,24 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Media;
 
 namespace AoEDEAlarm {
-    static class AoedeStaticGlobal {
-        public static AoEDEAlarmSettings Settings;
-
-        public static CancellationTokenSource tokenSource = null;
-        public static bool IsRunning;
-
+    public static class ConstValues {
         public static string WorkDirectoryPath { get; set; }
         public static string TessdataPath { get; set; }
         public static string SoundPath { get; set; }
         public static string DocumentPath { get; set; }
+        public static string ImagePath { get; set; }
+        public static string NotWorkingImagePath { get; set; }
 
-        public static string SettingFileName { get; set; }
-        public static string SoundFileName1 { get; set; }
+        public static string ApplicationSettingFileName { get; set; }
+        public static string AlarmSettingFileName { get; set; }
         public static string HelpFileName { get; set; }
-        public static string DebugBitmapFileName { get; set; }
+        public static string RulerImageFileName { get; set; }
 
-        static AoedeStaticGlobal() {
-
+        static ConstValues() {
             Assembly assm = Assembly.GetExecutingAssembly();
-            IsRunning = false;
-
             string executing_directory_name = Path.GetDirectoryName(assm.Location);
 
             WorkDirectoryPath = Path.Combine(executing_directory_name, "work");
@@ -39,11 +34,13 @@ namespace AoEDEAlarm {
             TessdataPath = Path.Combine(executing_directory_name, "tessdata");
             SoundPath = Path.Combine(executing_directory_name, "sound");
             DocumentPath = Path.Combine(executing_directory_name, "doc");
+            ImagePath = Path.Combine(executing_directory_name, "image");
+            NotWorkingImagePath = Path.Combine(executing_directory_name, "image/NotWorking");
 
-            SettingFileName = Path.Combine(executing_directory_name, @"setting.xml");
-            SoundFileName1 = Path.Combine(SoundPath, @"Windows Balloon.wav");
+            ApplicationSettingFileName = Path.Combine(executing_directory_name, @"application_setting.xml");
+            AlarmSettingFileName = Path.Combine(executing_directory_name, @"alarm_setting.xml");
             HelpFileName = Path.Combine(DocumentPath, @"Help.htm");
-            DebugBitmapFileName = Path.Combine(WorkDirectoryPath, @"xxx.bmp");
+            RulerImageFileName = Path.Combine(ImagePath, @"Ａ部分画像_Mat形式_ＵＩ１００パーセント.png");
 
         }
     }

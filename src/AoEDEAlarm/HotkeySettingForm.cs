@@ -25,9 +25,9 @@ namespace AoEDEAlarm {
         private void HotkeySettingForm_Load(object sender, EventArgs e) {
 
             KeysArr = new Keys[3];
-            KeysArr[0] = (Keys)AoedeStaticGlobal.Settings.Hotkey_Run;
-            KeysArr[1] = (Keys)AoedeStaticGlobal.Settings.Hotkey_Stop;
-            KeysArr[2] = (Keys)AoedeStaticGlobal.Settings.Hotkey_Customise;
+            KeysArr[0] = (Keys)GlobalValues.ApplicationSetting.Hotkey_Run;
+            KeysArr[1] = (Keys)GlobalValues.ApplicationSetting.Hotkey_Stop;
+            KeysArr[2] = (Keys)GlobalValues.ApplicationSetting.Hotkey_Customise;
 
             dataGridView1.ClipboardCopyMode = DataGridViewClipboardCopyMode.Disable;
             //dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
@@ -42,9 +42,9 @@ namespace AoEDEAlarm {
             dataGridView1.Columns[1].HeaderText = "ホットキー";
 
             // データを追加
-            dataGridView1.Rows.Add("監視開始", GetKeysString(KeysArr[0]));
-            dataGridView1.Rows.Add("監視終了", GetKeysString(KeysArr[1]));
-            dataGridView1.Rows.Add("画像位置設定", GetKeysString(KeysArr[2]));
+            dataGridView1.Rows.Add("監視開始", HotKey.GetKeysString(KeysArr[0]));
+            dataGridView1.Rows.Add("監視終了", HotKey.GetKeysString(KeysArr[1]));
+            dataGridView1.Rows.Add("画像位置設定", HotKey.GetKeysString(KeysArr[2]));
 
             //dataGridView1.DefaultCellStyle.SelectionBackColor = Color.Ivory;
             dataGridView1.Columns[0].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
@@ -74,7 +74,7 @@ namespace AoEDEAlarm {
                 }
 
                 if (IsEditting) {
-                    string x = GetKeysString(e.KeyCode | e.Modifiers);
+                    string x = HotKey.GetKeysString(e.KeyCode | e.Modifiers);
                     dataGridView1.Rows[i].Cells[1].Value = x;
                     KeysArr[i] = e.KeyCode | e.Modifiers;
                     FinishEdit(i,j);
@@ -132,11 +132,12 @@ namespace AoEDEAlarm {
 
         private void button1_Click(object sender, EventArgs e) {
 
-            AoedeStaticGlobal.Settings.Hotkey_Run = (int)KeysArr[0];
-            AoedeStaticGlobal.Settings.Hotkey_Stop = (int)KeysArr[1];
-            AoedeStaticGlobal.Settings.Hotkey_Customise = (int)KeysArr[2];
+            GlobalValues.ApplicationSetting.Hotkey_Run = (int)KeysArr[0];
+            GlobalValues.ApplicationSetting.Hotkey_Stop = (int)KeysArr[1];
+            GlobalValues.ApplicationSetting.Hotkey_Customise = (int)KeysArr[2];
 
-            AoEDEAlarmSettings.SaveXml(AoedeStaticGlobal.Settings);
+            XmlUtilityClass<ApplicationSettingClass>.SaveXml(GlobalValues.ApplicationSetting, ConstValues.ApplicationSettingFileName);
+            XmlUtilityClass<AlarmSettingClass>.SaveXml(GlobalValues.AlarmSetting, ConstValues.AlarmSettingFileName);
 
             MessageBox.Show(text: "位置を保存しました。"
                 , caption: "画像位置設定"
@@ -159,39 +160,39 @@ namespace AoEDEAlarm {
 
         }
 
-        private string GetKeysString(Keys keys) {
-            StringBuilder sb = new StringBuilder();
-            //Keys k = 0;
+        //public static string GetKeysString(Keys keys) {
+        //    StringBuilder sb = new StringBuilder();
+        //    //Keys k = 0;
 
-            if ((keys & Keys.Alt) == Keys.Alt) {
-                sb.Append("ALT");
-                //k |= Keys.Alt;
-            }
+        //    if ((keys & Keys.Alt) == Keys.Alt) {
+        //        sb.Append("ALT");
+        //        //k |= Keys.Alt;
+        //    }
 
-            if ((keys & Keys.Control) == Keys.Control) {
-                if (sb.Length > 0) sb.Append(" + ");
-                sb.Append("CONTROL");
-                //k |= Keys.Control;
-            }
+        //    if ((keys & Keys.Control) == Keys.Control) {
+        //        if (sb.Length > 0) sb.Append(" + ");
+        //        sb.Append("CONTROL");
+        //        //k |= Keys.Control;
+        //    }
 
-            if ((keys & Keys.Shift) == Keys.Shift) {
-                if (sb.Length > 0) sb.Append(" + ");
-                sb.Append("SHIFT");
-                //k |= Keys.Shift;
-            }
+        //    if ((keys & Keys.Shift) == Keys.Shift) {
+        //        if (sb.Length > 0) sb.Append(" + ");
+        //        sb.Append("SHIFT");
+        //        //k |= Keys.Shift;
+        //    }
 
-            Keys k = keys & ~Keys.Control & ~Keys.Shift & ~Keys.Alt;
+        //    Keys k = keys & ~Keys.Control & ~Keys.Shift & ~Keys.Alt;
 
-            if (k != 0) {
-                if (sb.Length > 0) sb.Append(" + ");
-                sb.Append(k);
-                //k |= e.KeyCode;
+        //    if (k != 0) {
+        //        if (sb.Length > 0) sb.Append(" + ");
+        //        sb.Append(k);
+        //        //k |= e.KeyCode;
 
-                //Keys k = x & ~Keys.Control & ~Keys.Shift & ~Keys.Alt;
-                //Keys k = e.KeyCode;
-            }
-            return sb.ToString();
-        }
+        //        //Keys k = x & ~Keys.Control & ~Keys.Shift & ~Keys.Alt;
+        //        //Keys k = e.KeyCode;
+        //    }
+        //    return sb.ToString();
+        //}
 
         private void button3_Click(object sender, EventArgs e) {
             int i = dataGridView1.CurrentCell.RowIndex;
